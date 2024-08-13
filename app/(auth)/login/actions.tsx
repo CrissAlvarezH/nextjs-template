@@ -1,14 +1,14 @@
 "use server";
-import { EmailPasswordLoginSchemaType } from "@/app/login/validations";
-import { getUserByEmail } from "@/services/users";
+import { EmailPasswordLoginSchemaType } from "@/app/(auth)/login/validations";
+import { getUserByEmail, sendConfirmationEmail } from "@/services/users";
 import { verify } from "@node-rs/argon2";
-import { lucia, validateRequest } from "@/lib/auth";
+import { lucia, setSession, validateRequest } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
-  const existingUser = await getUserByEmail(data.email);
-  if (!existingUser) {
+  const user = await getUserByEmail(data.email);
+  if (!user) {
     // NOTE:
     // Returning immediately allows malicious actors to figure out valid usernames from response times,
     // allowing them to only focus on guessing passwords in brute-force attacks.
@@ -23,7 +23,13 @@ export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
     };
   }
 
-  const validPassword = await verify(existingUser.password, data.password, {
+  if (!user.password || user.password === "") {
+    return {
+      error: "Este usuario ingresó con otro metodo de autenticación",
+    };
+  }
+
+  const validPassword = await verify(user.password, data.password, {
     memoryCost: 19456,
     timeCost: 2,
     outputLen: 32,
@@ -35,13 +41,15 @@ export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
     };
   }
 
-  const session = await lucia.createSession(existingUser.id, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes,
-  );
+  if (!user.is_email_validated) {
+    // send again
+    await sendConfirmationEmail(user.id);
+    return {
+      error: "El email aun no ha sido validado, revise su bandeja de entrada",
+    };
+  }
+
+  await setSession(user.id);
   return redirect("/");
 }
 

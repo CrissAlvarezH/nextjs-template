@@ -1,7 +1,11 @@
 "use server";
-import { getUserByEmail, insertUser } from "@/services/users";
+import {
+  getUserByEmail,
+  insertUser,
+  sendConfirmationEmail,
+} from "@/services/users";
 import { redirect } from "next/navigation";
-import { SignupSchemaType } from "@/app/signup/validations";
+import { SignupSchemaType } from "@/app/(auth)/signup/validations";
 import { hash } from "@node-rs/argon2";
 import { lucia } from "@/lib/auth";
 import { cookies } from "next/headers";
@@ -27,12 +31,12 @@ export async function signup(data: SignupSchemaType) {
   if (userId === 0)
     return { error: "Error al guardar ususario en base de datos" };
 
-  const session = await lucia.createSession(userId, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes,
-  );
-  return redirect("/");
+  try {
+    await sendConfirmationEmail(userId);
+  } catch (error) {
+    console.log("Error on send confirmation email", error);
+    return {
+      error: "Ocurrió un inconveniente enviando el email, intente mas tarde",
+    };
+  }
 }

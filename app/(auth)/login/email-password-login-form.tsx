@@ -16,10 +16,10 @@ import { Loader2 } from "lucide-react";
 import {
   emailPasswordLoginSchema,
   EmailPasswordLoginSchemaType,
-} from "@/app/login/validations";
-import { emailPasswordLogin } from "@/app/login/actions";
+} from "@/app/(auth)/login/validations";
+import { emailPasswordLogin } from "@/app/(auth)/login/actions";
 
-export function LoginForm() {
+export function EmailPasswordLoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -45,20 +45,19 @@ export function LoginForm() {
   return (
     <Form {...form}>
       {error && (
-        <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
+        <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
           <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-3"
       >
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Correo electronico</FormLabel>
               <FormControl>
                 <Input placeholder="Email" {...field} />
               </FormControl>
@@ -72,20 +71,15 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contraseña</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Ingrese su contraseña"
-                  {...field}
-                />
+                <Input type="password" placeholder="Contraseña" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button disabled={loading} type="submit" className="mt-3 w-full">
+        <Button disabled={loading} type="submit" className="mt-2 w-full">
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Ingresar
         </Button>

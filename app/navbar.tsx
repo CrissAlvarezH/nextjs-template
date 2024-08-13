@@ -6,8 +6,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { LogoutButton } from "@/app/login/logout-btn";
-import { logout } from "@/app/login/actions";
+import { LogoutButton } from "@/app/(auth)/login/logout-btn";
+import { logout } from "@/app/(auth)/login/actions";
 
 export default async function Navbar() {
   const user = await validateRequest();
@@ -15,9 +15,9 @@ export default async function Navbar() {
   return (
     <div className="flex justify-center shadow">
       <div className="flex w-full max-w-5xl items-center justify-between py-1">
-        <Button variant="link">
-          <Link href="/">Home</Link>
-        </Button>
+        <Link href="/">
+          <Button variant="link">Home</Button>
+        </Link>
 
         <div className="flex items-center gap-3">
           {user.user ? (
@@ -40,9 +40,9 @@ export default async function Navbar() {
               </PopoverContent>
             </Popover>
           ) : (
-            <Button variant="link">
-              <Link href="/login">Ingresar</Link>
-            </Button>
+            <Link href="/login">
+              <Button variant="link">Ingresar</Button>
+            </Link>
           )}
         </div>
       </div>

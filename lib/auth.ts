@@ -5,6 +5,8 @@ import { users, sessions } from "@/db/schemas";
 import { SelectSession, SelectUser } from "@/db/schemas/users";
 import { cookies } from "next/headers";
 import { cache } from "react";
+import { Google } from "arctic";
+import { env } from "@/env";
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
@@ -57,6 +59,16 @@ export const validateRequest = cache(
   },
 );
 
+export async function setSession(userId: number) {
+  const session = await lucia.createSession(userId, {});
+  const sessionCookie = lucia.createSessionCookie(session.id);
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  );
+}
+
 // IMPORTANT!
 declare module "lucia" {
   interface Register {
@@ -66,4 +78,12 @@ declare module "lucia" {
   }
 }
 
-type DatabaseUserAttributes = Omit<SelectUser, "password">;
+interface DatabaseUserAttributes {
+  id: number;
+}
+
+export const googleAuth = new Google(
+  env.GOOGLE_CLIENT_ID,
+  env.GOOGLE_CLIENT_ID_SECRET,
+  `${env.HOST_NAME}/api/login/google/callback`,
+);
