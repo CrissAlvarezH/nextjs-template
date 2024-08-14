@@ -1,12 +1,19 @@
 "use server";
-import { EmailPasswordLoginSchemaType } from "@/app/(auth)/login/validations";
+import {
+  emailPasswordLoginSchema,
+  EmailPasswordLoginSchemaType,
+} from "@/app/(auth)/login/validations";
 import { getUserByEmail, sendConfirmationEmail } from "@/services/users";
 import { verify } from "@node-rs/argon2";
 import { lucia, setSession, validateRequest } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { signupSchema } from "@/app/(auth)/signup/validations";
 
 export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
+  if (!emailPasswordLoginSchema.safeParse(data).success) {
+    return { error: "La data no cumple con las validaciones" };
+  }
   const user = await getUserByEmail(data.email);
   if (!user) {
     // NOTE:

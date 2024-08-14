@@ -120,7 +120,7 @@ export async function sendConfirmationEmail(userId: number) {
   );
 }
 
-export async function validateEmailWithConfirmationCode(
+export async function confirmationEmailCodeExists(
   userId: number,
   code: string,
   deleteAfter: boolean,
@@ -153,7 +153,7 @@ export async function validateUserEmail(userId: number, code: string) {
 
   if (user.is_email_validated) return;
 
-  const isValid = await validateEmailWithConfirmationCode(userId, code, true);
+  const isValid = await confirmationEmailCodeExists(userId, code, true);
   if (!isValid) {
     throw new Error("invalid-code");
   }

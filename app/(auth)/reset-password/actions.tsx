@@ -1,14 +1,11 @@
-import {
-  changePassword,
-  validateEmailWithConfirmationCode,
-} from "@/services/users";
+import { changePassword, confirmationEmailCodeExists } from "@/services/users";
 
 export async function justValidateEmailVerificationCode(
   userId: number,
   code: string,
 ) {
   // validate without delete it
-  return await validateEmailWithConfirmationCode(userId, code, false);
+  return await confirmationEmailCodeExists(userId, code, false);
 }
 
 export async function resetPassword(
@@ -16,7 +13,7 @@ export async function resetPassword(
   newPassword: string,
   confirmationCode: string,
 ) {
-  const isValid = await validateEmailWithConfirmationCode(
+  const isValid = await confirmationEmailCodeExists(
     userId,
     confirmationCode,
     true,

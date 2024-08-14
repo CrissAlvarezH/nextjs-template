@@ -6,12 +6,18 @@ import {
   sendConfirmationEmail,
 } from "@/services/users";
 import { redirect } from "next/navigation";
-import { SignupSchemaType } from "@/app/(auth)/signup/validations";
+import {
+  signupSchema,
+  SignupSchemaType,
+} from "@/app/(auth)/signup/validations";
 import { hash } from "@node-rs/argon2";
 import { lucia } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 export async function signup(data: SignupSchemaType) {
+  if (!signupSchema.safeParse(data).success) {
+    return { error: "La data no cumple con las validaciones" };
+  }
   const user = await getUserByEmail(data.email);
   if (user) {
     return { error: "El email ya esta siendo usado" };
