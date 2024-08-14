@@ -5,13 +5,14 @@ import {
   accounts,
   confirmationEmailCode,
   InsertUser,
-  SelectConfirmationEmailCode,
   users,
 } from "@/db/schemas/users";
 import { and, eq } from "drizzle-orm";
 import { GoogleUser } from "@/app/api/login/google/callback/route";
 import { sendEmail } from "@/lib/emails";
 import { VerifyEmail } from "@/emails/verify-email";
+import { ResetPassword } from "@/emails/reset-password";
+import { hash } from "@node-rs/argon2";
 
 export async function getUserById(id: number) {
   return db.query.users.findFirst({ where: eq(users.id, id) });
@@ -25,6 +26,20 @@ export async function insertUser(user: InsertUser) {
   const res = await db.insert(users).values(user).returning({ id: users.id });
   if (res.length > 0) return res[0].id;
   return 0;
+}
+
+export async function hashPassword(password: string) {
+  return await hash(password, {
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1,
+  });
+}
+
+export async function changePassword(userId: number, newPassword: string) {
+  const hashed = await hashPassword(newPassword);
+  await db.update(users).set({ password: hashed }).where(eq(users.id, userId));
 }
 
 export async function getAccountByGoogleId(googleUserId: string) {
@@ -59,14 +74,7 @@ export async function createGoogleUser(googleUser: GoogleUser) {
   return user.id;
 }
 
-export async function sendConfirmationEmail(userId: number) {
-  const user = await getUserById(userId);
-
-  if (!user) {
-    throw new Error(`User with id ${userId} does not exists`);
-  }
-  if (user.is_email_validated) return;
-
+async function getOrCreateConfirmationEmail(userId: number) {
   let confirmationCode = await db.query.confirmationEmailCode.findFirst({
     where: eq(confirmationEmailCode.userId, userId),
   });
@@ -78,12 +86,63 @@ export async function sendConfirmationEmail(userId: number) {
       .values({ userId, code })
       .returning();
   }
+  return confirmationCode.code;
+}
+
+export async function sendForgotPasswordEmail(email: string) {
+  const user = await getUserByEmail(email);
+  if (!user) {
+    throw new Error("user-does-not-exists");
+  }
+  const code = await getOrCreateConfirmationEmail(user.id);
+
+  await sendEmail(
+    user.email,
+    "Restablecer contraseña",
+    <ResetPassword userId={user.id} code={code} />,
+  );
+}
+
+export async function sendConfirmationEmail(userId: number) {
+  const user = await getUserById(userId);
+
+  if (!user) {
+    throw new Error(`User with id ${userId} does not exists`);
+  }
+  if (user.is_email_validated) return;
+
+  const code = await getOrCreateConfirmationEmail(user.id);
 
   await sendEmail(
     user.email,
     "Confirma tu email para finalizar registro",
-    <VerifyEmail userId={user.id} code={confirmationCode.code} />,
+    <VerifyEmail userId={user.id} code={code} />,
   );
+}
+
+export async function validateEmailWithConfirmationCode(
+  userId: number,
+  code: string,
+  deleteAfter: boolean,
+) {
+  const confirmationCode = await db.query.confirmationEmailCode.findFirst({
+    where: and(
+      eq(confirmationEmailCode.userId, userId),
+      eq(confirmationEmailCode.code, code),
+    ),
+  });
+  if (deleteAfter) {
+    await db
+      .delete(confirmationEmailCode)
+      .where(
+        and(
+          eq(confirmationEmailCode.userId, userId),
+          eq(confirmationEmailCode.code, code),
+        ),
+      );
+  }
+
+  return !!confirmationCode;
 }
 
 export async function validateUserEmail(userId: number, code: string) {
@@ -94,14 +153,8 @@ export async function validateUserEmail(userId: number, code: string) {
 
   if (user.is_email_validated) return;
 
-  const confirmationCode = await db.query.confirmationEmailCode.findFirst({
-    where: and(
-      eq(confirmationEmailCode.userId, userId),
-      eq(confirmationEmailCode.code, code),
-    ),
-  });
-
-  if (!confirmationCode) {
+  const isValid = await validateEmailWithConfirmationCode(userId, code, true);
+  if (!isValid) {
     throw new Error("invalid-code");
   }
 
@@ -109,13 +162,4 @@ export async function validateUserEmail(userId: number, code: string) {
     .update(users)
     .set({ is_email_validated: true })
     .where(eq(users.id, userId));
-
-  await db
-    .delete(confirmationEmailCode)
-    .where(
-      and(
-        eq(confirmationEmailCode.userId, userId),
-        eq(confirmationEmailCode.code, code),
-      ),
-    );
 }

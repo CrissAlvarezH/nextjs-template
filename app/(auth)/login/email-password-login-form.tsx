@@ -30,6 +30,7 @@ export function EmailPasswordLoginForm() {
 
   async function onSubmit(values: EmailPasswordLoginSchemaType) {
     setLoading(true);
+    setError("");
     emailPasswordLogin(values)
       .then((res) => {
         if (res && res.error) setError(res.error);

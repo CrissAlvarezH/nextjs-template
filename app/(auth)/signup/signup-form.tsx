@@ -39,6 +39,7 @@ export function SignupForm() {
 
   async function onSubmit(values: SignupSchemaType) {
     setLoading(true);
+    setError("");
     signup(values)
       .then((res) => {
         if (res && res.error) setError(res.error);

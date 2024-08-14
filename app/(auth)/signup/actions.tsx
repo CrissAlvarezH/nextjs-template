@@ -1,6 +1,7 @@
 "use server";
 import {
   getUserByEmail,
+  hashPassword,
   insertUser,
   sendConfirmationEmail,
 } from "@/services/users";
@@ -15,18 +16,12 @@ export async function signup(data: SignupSchemaType) {
   if (user) {
     return { error: "El email ya esta siendo usado" };
   }
-  const passwordHash = await hash(data.password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
 
   const userId = await insertUser({
     name: data.full_name,
     email: data.email,
     phone: data.phone,
-    password: passwordHash,
+    password: await hashPassword(data.password),
   });
   if (userId === 0)
     return { error: "Error al guardar ususario en base de datos" };

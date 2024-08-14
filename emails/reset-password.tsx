@@ -19,7 +19,7 @@ import { env } from "@/env";
 export const BASE_URL = env.HOST_NAME;
 const applicationName = "<app_name>";
 
-export function VerifyEmail({
+export function ResetPassword({
   userId,
   code,
 }: {
@@ -29,33 +29,34 @@ export function VerifyEmail({
   return (
     <Html>
       <Head />
-      <Preview>Verify your Email</Preview>
+      <Preview>Restablece contraseña</Preview>
       <Tailwind>
         <React.Fragment>
           <Body className="mx-auto my-auto bg-white font-sans">
             <Container className="mx-auto my-[40px] w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
               <Section className="mt-[32px]">
                 <Img
-                  src={`${BASE_URL}/welcome.png`}
+                  src={`${BASE_URL}/welcome.jpeg`}
                   width="160"
                   height="48"
-                  alt="Welcome"
+                  alt="StarterKit"
                   className="mx-auto my-0"
                 />
               </Section>
 
               <Section className="mb-[32px] mt-[32px] text-center">
                 <Text className="mb-8 text-[14px] font-medium leading-[24px] text-black">
-                  Haz click en el siguiente enlace para verificar tu email:
+                  Haz click en el siguiente enlace para restablecer tu
+                  contraseña
                 </Text>
 
                 <Text className="text-[14px] font-medium leading-[24px] text-black">
                   <Link
-                    href={`${BASE_URL}/verify-email?id=${userId}&code=${code}`}
+                    href={`${BASE_URL}/reset-password?id=${userId}&code=${code}`}
                     target="_blank"
                     className="text-[#2754C5] underline"
                   >
-                    Verificar correo
+                    Restablecer contraseña
                   </Link>
                 </Text>
               </Section>

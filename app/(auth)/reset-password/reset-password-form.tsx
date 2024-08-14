@@ -1,0 +1,119 @@
+"use client";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import {
+  resetPasswordSchema,
+  ResetPasswordSchemaType,
+} from "@/app/(auth)/reset-password/validations";
+import { resetPassword } from "@/app/(auth)/reset-password/actions";
+
+export function ResetPasswordForm({
+  userId,
+  code,
+}: {
+  userId: number;
+  code: string;
+}) {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<ResetPasswordSchemaType>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: { password: "", confirmation_password: "" },
+  });
+
+  function onSubmit(values: ResetPasswordSchemaType) {
+    setLoading(true);
+    setError("");
+    resetPassword(userId, values.password, code)
+      .then((res) => {
+        if (res && res.error) setError(res.error);
+        else setSuccess(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setError("Ocurrió un inconveniente, vuelve a intentar mas tarde");
+      })
+      .finally(() => setLoading(false));
+  }
+
+  if (success) {
+    return (
+      <div>
+        <p className="text-center text-lg font-bold">
+          Contraseña restaurada exitosamente
+        </p>
+        <p className="pt-2 text-center">
+          Puedes ingresar con tu nueva contraseña
+        </p>
+      </div>
+    );
+  }
+  return (
+    <>
+      <p className="pb-4 text-center text-lg font-bold">Restaurar contraseña</p>
+      <Form {...form}>
+        {error && (
+          <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
+            <p className="text-sm text-red-500">{error}</p>
+          </div>
+        )}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-3"
+        >
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Nueva contraseña"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmation_password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Confirmar contraseña"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button disabled={loading} type="submit" className="mt-2 w-full">
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Restaurar contraseña
+          </Button>
+        </form>
+      </Form>
+    </>
+  );
+}

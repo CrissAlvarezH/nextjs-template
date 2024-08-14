@@ -54,7 +54,7 @@ export default async function LoginPage() {
           <EmailPasswordLoginForm />
 
           <div className="flex items-center justify-center gap-1 pt-4 text-sm">
-            <Link href="/signup" className="flex flex-1 justify-start">
+            <Link href="/forgot-password" className="flex flex-1 justify-start">
               <Button
                 size="sm"
                 variant="link"
