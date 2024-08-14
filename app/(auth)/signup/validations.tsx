@@ -6,6 +6,8 @@ export const signupSchema = z
       .string()
       .min(2, "Minimo 2 caracteres")
       .max(200, "Maximo 200 caracteres")
+      .trim()
+      .includes(" ", { message: "Debe ser nombre completo" })
       .regex(
         /^[a-zA-Z\s]+$/,
         "El nombre solo puede contener letras y espacios",

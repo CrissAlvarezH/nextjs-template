@@ -78,9 +78,7 @@ declare module "lucia" {
   }
 }
 
-interface DatabaseUserAttributes {
-  id: number;
-}
+type DatabaseUserAttributes = Omit<SelectUser, "password">;
 
 export const googleAuth = new Google(
   env.GOOGLE_CLIENT_ID,

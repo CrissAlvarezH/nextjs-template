@@ -31,6 +31,10 @@ export default async function Navbar() {
                 <div className="flex flex-col gap-2">
                   <p className="text-sm">{user.user?.name}</p>
                   <p className="text-xs text-gray-500">{user.user?.email}</p>
+
+                  <div className="mt-2 flex flex-col border-y">
+                    <Button variant="ghost">Mis datos</Button>
+                  </div>
                   <div className="flex cursor-pointer justify-end pt-2">
                     <form action={logout}>
                       <LogoutButton />
