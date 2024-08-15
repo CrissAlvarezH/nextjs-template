@@ -12,7 +12,7 @@ import { GoogleUser } from "@/app/api/login/google/callback/route";
 import { sendEmail } from "@/lib/emails";
 import { VerifyEmail } from "@/emails/verify-email";
 import { ResetPassword } from "@/emails/reset-password";
-import { hash } from "@node-rs/argon2";
+import { hash, verify } from "@node-rs/argon2";
 
 export async function getUserById(id: number) {
   return db.query.users.findFirst({ where: eq(users.id, id) });
@@ -37,7 +37,35 @@ export async function hashPassword(password: string) {
   });
 }
 
-export async function changePassword(userId: number, newPassword: string) {
+export async function getUserOAuthProvider(userId: number) {
+  const account = await db.query.accounts.findFirst({
+    where: eq(accounts.userId, userId),
+  });
+  if (!account) return null;
+  return account.providerId;
+}
+
+export async function verifyUserPassword(hashed: string, password: string) {
+  return await verify(hashed, password, {
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1,
+  });
+}
+
+export async function updateUserData(
+  userId: number,
+  fullName: string,
+  phone: string,
+) {
+  await db
+    .update(users)
+    .set({ name: fullName, phone })
+    .where(eq(users.id, userId));
+}
+
+export async function updateUserPassword(userId: number, newPassword: string) {
   const hashed = await hashPassword(newPassword);
   await db.update(users).set({ password: hashed }).where(eq(users.id, userId));
 }
@@ -57,7 +85,12 @@ export async function createGoogleUser(googleUser: GoogleUser) {
     // create user
     [user] = await db
       .insert(users)
-      .values({ name: googleUser.name, email: googleUser.email })
+      .values({
+        name: googleUser.name,
+        email: googleUser.email,
+        is_email_validated: true,
+        password: "",
+      })
       .returning();
   }
 
@@ -145,18 +178,13 @@ export async function confirmationEmailCodeExists(
   return !!confirmationCode;
 }
 
-export async function validateUserEmail(userId: number, code: string) {
+export async function validateUserEmail(userId: number) {
   const user = await getUserById(userId);
   if (!user) {
-    throw new Error("invalid-code");
+    throw new Error("user-does-not-exists");
   }
 
   if (user.is_email_validated) return;
-
-  const isValid = await confirmationEmailCodeExists(userId, code, true);
-  if (!isValid) {
-    throw new Error("invalid-code");
-  }
 
   await db
     .update(users)

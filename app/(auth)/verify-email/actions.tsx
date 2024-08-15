@@ -1,11 +1,22 @@
 "use server";
-import { validateUserEmail } from "@/services/users";
+import {
+  confirmationEmailCodeExists,
+  getUserById,
+  validateUserEmail,
+} from "@/services/users";
 
-export async function checkEmailConfirmationCode(userId: number, code: string) {
+export async function checkUserCode(userId: number, code: string) {
+  const user = await getUserById(userId);
+  if (!user) return { error: "Link invalido" };
+  if (user.is_email_validated) return;
+
+  const isValid = await confirmationEmailCodeExists(userId, code, true);
+  if (!isValid) return { error: "Link invalido" };
+
   try {
-    await validateUserEmail(userId, code);
+    await validateUserEmail(userId);
   } catch (error: unknown) {
-    if (error instanceof Error && error.message === "invalid-code")
+    if (error instanceof Error && error.message === "user-does-not-exists")
       return { error: "El link de confirmación es invalido" };
     else {
       console.log("Error on validate user email", error);

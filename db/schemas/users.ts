@@ -15,7 +15,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 250 }).notNull(),
   is_email_validated: boolean("is_email_validated").default(false),
   phone: varchar("phone", { length: 15 }),
-  password: varchar("password"),
+  password: varchar("password").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

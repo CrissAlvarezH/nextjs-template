@@ -3,7 +3,11 @@ import {
   emailPasswordLoginSchema,
   EmailPasswordLoginSchemaType,
 } from "@/app/(auth)/login/validations";
-import { getUserByEmail, sendConfirmationEmail } from "@/services/users";
+import {
+  getUserByEmail,
+  sendConfirmationEmail,
+  verifyUserPassword,
+} from "@/services/users";
 import { verify } from "@node-rs/argon2";
 import { lucia, setSession, validateRequest } from "@/lib/auth";
 import { cookies } from "next/headers";
@@ -36,12 +40,7 @@ export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
     };
   }
 
-  const validPassword = await verify(user.password, data.password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
+  const validPassword = await verifyUserPassword(user.password, data.password);
   if (!validPassword) {
     return {
       error: "Credenciales incorrectas",

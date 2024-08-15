@@ -1,4 +1,4 @@
-import { checkEmailConfirmationCode } from "@/app/(auth)/verify-email/actions";
+import { checkUserCode } from "@/app/(auth)/verify-email/actions";
 
 export default async function VerifyEmailPage({
   searchParams: { id, code },
@@ -15,7 +15,7 @@ export default async function VerifyEmailPage({
       </div>
     );
   }
-  const error = await checkEmailConfirmationCode(id, code);
+  const error = await checkUserCode(id, code);
   if (error && error.error) {
     return (
       <div className="flex justify-center py-5">

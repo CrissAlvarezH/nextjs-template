@@ -3,6 +3,7 @@ version: "3.9"
 services:
   database:
     image: "postgres:15-alpine3.18"
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
     ports:
       - "5432:5432"
     environment:

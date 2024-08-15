@@ -33,7 +33,11 @@ export default async function Navbar() {
                   <p className="text-xs text-gray-500">{user.user?.email}</p>
 
                   <div className="mt-2 flex flex-col border-y">
-                    <Button variant="ghost">Mis datos</Button>
+                    <Link href="/profile">
+                      <Button variant="ghost" className="w-full">
+                        Mis datos
+                      </Button>
+                    </Link>
                   </div>
                   <div className="flex cursor-pointer justify-end pt-2">
                     <form action={logout}>

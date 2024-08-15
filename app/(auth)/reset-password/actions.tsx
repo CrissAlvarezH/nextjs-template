@@ -1,4 +1,8 @@
-import { changePassword, confirmationEmailCodeExists } from "@/services/users";
+import {
+  updateUserPassword,
+  confirmationEmailCodeExists,
+  validateUserEmail,
+} from "@/services/users";
 
 export async function justValidateEmailVerificationCode(
   userId: number,
@@ -20,5 +24,10 @@ export async function resetPassword(
   );
   if (!isValid) return { error: "Enlace invalido" };
 
-  await changePassword(userId, newPassword);
+  await updateUserPassword(userId, newPassword);
+  try {
+    // just in case the user change his password before validate it, we mark as validated
+    // because its email is validated to restore its password
+    await validateUserEmail(userId);
+  } catch (error) {}
 }
