@@ -1,10 +1,10 @@
 ## Description
 
 Nextjs project with the following services integrated:
-- [shadcn/ui](#https://ui.shadcn.com/) (UI components library)
-- [Drizzle ORM](#https://orm.drizzle.team/) 
-- [Lucia Auth](#https://lucia-auth.com/) (Email/Password and Google)
-- [Resend emails](#https://resend.com/)
+- [shadcn/ui](https://ui.shadcn.com/) (UI components library)
+- [Drizzle ORM](https://orm.drizzle.team/) 
+- [Lucia Auth](https://lucia-auth.com/) (Email/Password and Google)
+- [Resend emails](https://resend.com/)
 
 ## Run locally
 
