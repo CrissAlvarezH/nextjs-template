@@ -9,20 +9,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { emailPasswordLoginSchema } from "@/app/(auth)/login/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   forgotPasswordSchema,
   ForgotPasswordSchemaType,
 } from "@/app/(auth)/forgot-password/validations";
 import { forgotPassword } from "@/app/(auth)/forgot-password/actions";
+import { useServerAction } from "@/hooks/rsc";
 
 export function ForgotPasswordForm() {
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const {error, loading, success, execute: forgotPasswordAction} = useServerAction(forgotPassword)
 
   const form = useForm<ForgotPasswordSchemaType>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -30,18 +27,7 @@ export function ForgotPasswordForm() {
   });
 
   function onSubmit(values: ForgotPasswordSchemaType) {
-    setLoading(true);
-    setError("");
-    forgotPassword(values.email)
-      .then((res) => {
-        if (res && res.error) setError(res.error);
-        else setSuccess(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        setError("Ocurrió un inconveniente, vuelve a intentar mas tarde");
-      })
-      .finally(() => setLoading(false));
+    void forgotPasswordAction(values.email)
   }
 
   if (success) {

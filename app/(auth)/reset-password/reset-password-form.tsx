@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -17,6 +16,7 @@ import {
   ResetPasswordSchemaType,
 } from "@/app/(auth)/reset-password/validations";
 import { resetPassword } from "@/app/(auth)/reset-password/actions";
+import { useServerAction } from "@/hooks/rsc";
 
 export function ResetPasswordForm({
   userId,
@@ -25,9 +25,12 @@ export function ResetPasswordForm({
   userId: number;
   code: string;
 }) {
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const {
+    error,
+    loading,
+    success,
+    execute: resetPasswordAction,
+  } = useServerAction(resetPassword);
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(resetPasswordSchema),
@@ -35,18 +38,7 @@ export function ResetPasswordForm({
   });
 
   function onSubmit(values: ResetPasswordSchemaType) {
-    setLoading(true);
-    setError("");
-    resetPassword(userId, values.password, code)
-      .then((res) => {
-        if (res && res.error) setError(res.error);
-        else setSuccess(true);
-      })
-      .catch((error) => {
-        console.log(error);
-        setError("Ocurrió un inconveniente, vuelve a intentar mas tarde");
-      })
-      .finally(() => setLoading(false));
+    void resetPasswordAction(userId, values.password, code);
   }
 
   if (success) {

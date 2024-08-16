@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -7,7 +6,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -18,29 +16,22 @@ import {
   EmailPasswordLoginSchemaType,
 } from "@/app/(auth)/login/validations";
 import { emailPasswordLogin } from "@/app/(auth)/login/actions";
+import { useServerAction } from "@/hooks/rsc";
 
 export function EmailPasswordLoginForm() {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const {
+    error,
+    loading,
+    execute: emailPasswordLoginAction,
+  } = useServerAction(emailPasswordLogin);
 
   const form = useForm<EmailPasswordLoginSchemaType>({
     resolver: zodResolver(emailPasswordLoginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  async function onSubmit(values: EmailPasswordLoginSchemaType) {
-    setLoading(true);
-    setError("");
-    emailPasswordLogin(values)
-      .then((res) => {
-        if (res && res.error) setError(res.error);
-      })
-      .catch((err) => {
-        console.log("error", err.error);
-        // TODO Sentry here
-        setError("Error al acceder con el usuario, intente mas tarde");
-      })
-      .finally(() => setLoading(false));
+  function onSubmit(values: EmailPasswordLoginSchemaType) {
+    void emailPasswordLoginAction(values);
   }
 
   return (

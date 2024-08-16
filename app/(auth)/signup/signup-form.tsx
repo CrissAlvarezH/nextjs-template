@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { signup } from "@/app/(auth)/signup/actions";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useServerAction } from "@/hooks/rsc";
 
 const defaultValues = {
   full_name: "",
@@ -28,29 +28,15 @@ const defaultValues = {
 };
 
 export function SignupForm() {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const {error, loading, success, execute: signupAction} = useServerAction(signup)
 
   const form = useForm<SignupSchemaType>({
     resolver: zodResolver(signupSchema),
     defaultValues: defaultValues,
   });
 
-  async function onSubmit(values: SignupSchemaType) {
-    setLoading(true);
-    setError("");
-    signup(values)
-      .then((res) => {
-        if (res && res.error) setError(res.error);
-        else setSuccess(true);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        // TODO Sentry here
-        setError("Error al crear el usuario, intente de nuevo");
-      })
-      .finally(() => setLoading(false));
+  function onSubmit(values: SignupSchemaType) {
+    void signupAction(values)
   }
 
   if (success) {

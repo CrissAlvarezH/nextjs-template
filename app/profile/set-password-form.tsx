@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { DatabaseUserAttributes } from "@/lib/auth";
@@ -19,11 +18,15 @@ import {
   SetPasswordFormSchemaType,
 } from "@/app/profile/validations";
 import { changePassword } from "@/app/profile/actions";
+import { useServerAction } from "@/hooks/rsc";
 
 export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const {
+    error,
+    success,
+    loading,
+    execute: changePasswordAction,
+  } = useServerAction(changePassword);
 
   const form = useForm<SetPasswordFormSchemaType>({
     resolver: zodResolver(setPasswordFormSchema),
@@ -33,20 +36,8 @@ export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
     },
   });
 
-  async function onSubmit(values: SetPasswordFormSchemaType) {
-    setLoading(true);
-    setError("");
-    changePassword(user.id, "", values.new_password)
-      .then((res) => {
-        if (res && res.error) setError(res.error);
-        else setSuccess(true);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        // todo sentry here
-        setError("error al crear el usuario, intente de nuevo");
-      })
-      .finally(() => setLoading(false));
+  function onSubmit(values: SetPasswordFormSchemaType) {
+    void changePasswordAction(user.id, "", values.new_password);
   }
 
   return (

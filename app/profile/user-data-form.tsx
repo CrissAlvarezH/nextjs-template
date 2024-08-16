@@ -19,10 +19,14 @@ import {
   UserDataFormSchemaType,
 } from "@/app/profile/validations";
 import { changeData } from "@/app/profile/actions";
+import { useServerAction } from "@/hooks/rsc";
 
 export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const {
+    error,
+    loading,
+    execute: changeDataAction,
+  } = useServerAction(changeData, { onSuccess: () => setOnEditMode(false) });
   const [onEditMode, setOnEditMode] = useState(false);
 
   const form = useForm<UserDataFormSchemaType>({
@@ -34,20 +38,8 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
     },
   });
 
-  async function onSubmit(values: UserDataFormSchemaType) {
-    setLoading(true);
-    setError("");
-    changeData(user.id, values.full_name, values.phone)
-      .then((res) => {
-        if (res && res.error) setError(res.error);
-        else setOnEditMode(false);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        // todo sentry here
-        setError("error al crear el usuario, intente de nuevo");
-      })
-      .finally(() => setLoading(false));
+  function onSubmit(values: UserDataFormSchemaType) {
+    void changeDataAction(user.id, values.full_name, values.phone);
   }
 
   return (

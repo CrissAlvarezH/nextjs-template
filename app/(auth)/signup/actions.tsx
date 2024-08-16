@@ -15,8 +15,9 @@ import { lucia } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 export async function signup(data: SignupSchemaType) {
-  if (!signupSchema.safeParse(data).success) {
-    return { error: "La data no cumple con las validaciones" };
+  const error = signupSchema.safeParse(data).error;
+  if (error) {
+    return { error: error.message };
   }
   const user = await getUserByEmail(data.email);
   if (user) {
