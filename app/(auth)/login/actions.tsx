@@ -8,16 +8,14 @@ import {
   sendConfirmationEmail,
   verifyUserPassword,
 } from "@/services/users";
-import { verify } from "@node-rs/argon2";
 import { lucia, setSession, validateRequest } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { signupSchema } from "@/app/(auth)/signup/validations";
 
 export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
-  if (!emailPasswordLoginSchema.safeParse(data).success) {
-    return { error: "La data no cumple con las validaciones" };
-  }
+  const error = emailPasswordLoginSchema.safeParse(data).error;
+  if (error) return { error: error.message };
+
   const user = await getUserByEmail(data.email);
   if (!user) {
     // NOTE:
@@ -29,23 +27,14 @@ export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
     // Since protecting against this is non-trivial,
     // it is crucial your implementation is protected against brute-force attacks with login throttling etc.
     // If usernames are public, you may outright tell the user that the username is invalid.
-    return {
-      error: "Credenciales incorrectas",
-    };
+    return { error: "Credenciales incorrectas" };
   }
 
-  if (!user.password || user.password === "") {
-    return {
-      error: "Este usuario ingresó con otro metodo de autenticación",
-    };
-  }
+  if (!user.password || user.password === "")
+    return { error: "Este usuario ingresó con otro metodo de autenticación" };
 
   const validPassword = await verifyUserPassword(user.password, data.password);
-  if (!validPassword) {
-    return {
-      error: "Credenciales incorrectas",
-    };
-  }
+  if (!validPassword) return { error: "Credenciales incorrectas" };
 
   if (!user.is_email_validated) {
     // send again
@@ -61,11 +50,7 @@ export async function emailPasswordLogin(data: EmailPasswordLoginSchemaType) {
 
 export async function logout() {
   const { session } = await validateRequest();
-  if (!session) {
-    return {
-      error: "No autorizado",
-    };
-  }
+  if (!session) return { error: "No autorizado" };
 
   await lucia.invalidateSession(session.id);
 

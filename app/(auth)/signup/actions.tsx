@@ -5,24 +5,17 @@ import {
   insertUser,
   sendConfirmationEmail,
 } from "@/services/users";
-import { redirect } from "next/navigation";
 import {
   signupSchema,
   SignupSchemaType,
 } from "@/app/(auth)/signup/validations";
-import { hash } from "@node-rs/argon2";
-import { lucia } from "@/lib/auth";
-import { cookies } from "next/headers";
 
 export async function signup(data: SignupSchemaType) {
   const error = signupSchema.safeParse(data).error;
-  if (error) {
-    return { error: error.message };
-  }
+  if (error) return { error: error.message };
+
   const user = await getUserByEmail(data.email);
-  if (user) {
-    return { error: "El email ya esta siendo usado" };
-  }
+  if (user) return { error: "El email ya esta siendo usado" };
 
   const userId = await insertUser({
     name: data.full_name,

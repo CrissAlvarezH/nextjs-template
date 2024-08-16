@@ -8,7 +8,6 @@ export const userDataFormSchema = z.object({
     .trim()
     .includes(" ", { message: "Debe ser nombre completo" })
     .regex(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras y espacios"),
-  email: z.string().email("No es un email valido"),
   phone: z
     .string()
     .min(10, "Minimo 10 caracteres")

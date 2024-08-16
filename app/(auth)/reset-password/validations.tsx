@@ -10,4 +10,6 @@ export const resetPasswordSchema = z
     path: ["confirmation_password"],
   });
 
+export const passwordSchema = z.string().min(6, "Minimo 6 caracteres");
+
 export type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>;

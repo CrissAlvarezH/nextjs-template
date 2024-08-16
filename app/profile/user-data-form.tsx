@@ -33,7 +33,6 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
     resolver: zodResolver(userDataFormSchema),
     defaultValues: {
       full_name: user.name,
-      email: user.email,
       phone: user.phone || "",
     },
   });

@@ -3,6 +3,7 @@ import {
   confirmationEmailCodeExists,
   validateUserEmail,
 } from "@/services/users";
+import { passwordSchema } from "@/app/(auth)/reset-password/validations";
 
 export async function justValidateEmailVerificationCode(
   userId: number,
@@ -17,6 +18,8 @@ export async function resetPassword(
   newPassword: string,
   confirmationCode: string,
 ) {
+  const error = passwordSchema.safeParse(newPassword).error;
+  if (error) return { error: error.message };
   const isValid = await confirmationEmailCodeExists(
     userId,
     confirmationCode,
