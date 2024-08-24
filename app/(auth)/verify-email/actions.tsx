@@ -8,7 +8,7 @@ import { InvalidLinkError } from "@/lib/errors";
 import { unauthenticatedAction } from "@/lib/server-actions";
 import { z } from "zod";
 
-export const checkUserCode = unauthenticatedAction
+export const checkUserCodeAction = unauthenticatedAction
   .createServerAction()
   .input(z.object({ userId: z.number(), code: z.string() }))
   .handler(async ({ input: { userId, code } }) => {

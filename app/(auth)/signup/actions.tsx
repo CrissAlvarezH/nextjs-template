@@ -9,7 +9,7 @@ import { signupSchema } from "@/app/(auth)/signup/validations";
 import { EmailTakenError } from "@/lib/errors";
 import { unauthenticatedAction } from "@/lib/server-actions";
 
-export const signup = unauthenticatedAction
+export const signupAction = unauthenticatedAction
   .createServerAction()
   .input(signupSchema)
   .handler(async ({ input: data }) => {

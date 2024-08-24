@@ -1,5 +1,5 @@
 import { ResetPasswordForm } from "@/app/(auth)/reset-password/reset-password-form";
-import { justValidateEmailVerificationCode } from "@/app/(auth)/reset-password/actions";
+import { validateEmailVerificationCodeAction } from "@/app/(auth)/reset-password/actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -19,7 +19,10 @@ export default async function ResetPasswordPage({
     );
   }
 
-  const isValid = await justValidateEmailVerificationCode({ userId: id, code });
+  const isValid = await validateEmailVerificationCodeAction({
+    userId: id,
+    code,
+  });
   if (!isValid) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 px-3 py-5">

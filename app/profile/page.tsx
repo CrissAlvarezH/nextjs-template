@@ -2,7 +2,7 @@ import { UserDataForm } from "@/app/profile/user-data-form";
 import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ChangePasswordForm } from "@/app/profile/change-password-form";
-import { userRequireCurrentPasswordToChangeIt } from "@/app/profile/actions";
+import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
 import { SetPasswordForm } from "@/app/profile/set-password-form";
 
 export default async function ProfilePage() {
@@ -11,7 +11,7 @@ export default async function ProfilePage() {
     redirect("/");
   }
   const [requiresCurrentPassword, error] =
-    await userRequireCurrentPasswordToChangeIt(user.user.id);
+    await userRequireCurrentPasswordToChangeItAction(user.user.id);
 
   // TODO create generic ui for retry in case of an error
 

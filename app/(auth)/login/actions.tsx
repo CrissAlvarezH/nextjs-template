@@ -18,7 +18,7 @@ import {
   unauthenticatedAction,
 } from "@/lib/server-actions";
 
-export const emailPasswordLogin = unauthenticatedAction
+export const emailPasswordLoginAction = unauthenticatedAction
   .createServerAction()
   .input(emailPasswordLoginSchema)
   .handler(async ({ input: data }) => {
@@ -55,7 +55,7 @@ export const emailPasswordLogin = unauthenticatedAction
     redirect("/");
   });
 
-export const logout = authenticatedAction
+export const logoutAction = authenticatedAction
   .createServerAction()
   .handler(async ({ ctx: { user } }) => {
     await lucia.invalidateUserSessions(user.id);

@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signup } from "@/app/(auth)/signup/actions";
+import { signupAction } from "@/app/(auth)/signup/actions";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useServerAction } from "zsa-react";
@@ -32,8 +32,8 @@ export function SignupForm() {
     error,
     isPending,
     isSuccess,
-    execute: signupAction,
-  } = useServerAction(signup);
+    execute: signup,
+  } = useServerAction(signupAction);
 
   const form = useForm<SignupSchemaType>({
     resolver: zodResolver(signupSchema),
@@ -41,7 +41,7 @@ export function SignupForm() {
   });
 
   function onSubmit(values: SignupSchemaType) {
-    void signupAction(values);
+    void signup(values);
   }
 
   if (isSuccess) {

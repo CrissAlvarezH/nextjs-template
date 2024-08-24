@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/app/(auth)/login/logout-btn";
-import { logout } from "@/app/(auth)/login/actions";
+import { logoutAction } from "@/app/(auth)/login/actions";
 
 export default async function Navbar() {
   const user = await validateRequest();
@@ -40,7 +40,12 @@ export default async function Navbar() {
                     </Link>
                   </div>
                   <div className="flex cursor-pointer justify-end pt-2">
-                    <form action={logout}>
+                    <form
+                      action={async () => {
+                        "use server";
+                        await logoutAction();
+                      }}
+                    >
                       <LogoutButton />
                     </form>
                   </div>

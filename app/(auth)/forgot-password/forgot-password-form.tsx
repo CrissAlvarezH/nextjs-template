@@ -15,16 +15,16 @@ import {
   forgotPasswordSchema,
   ForgotPasswordSchemaType,
 } from "@/app/(auth)/forgot-password/validations";
-import { forgotPassword } from "@/app/(auth)/forgot-password/actions";
-import { useServerAction } from "@/hooks/actions-hooks";
+import { forgotPasswordAction } from "@/app/(auth)/forgot-password/actions";
+import { useServerAction } from "zsa-react";
 
 export function ForgotPasswordForm() {
   const {
     error,
-    loading,
-    success,
-    execute: forgotPasswordAction,
-  } = useServerAction(forgotPassword);
+    isPending,
+    isSuccess,
+    execute: forgotPassword,
+  } = useServerAction(forgotPasswordAction);
 
   const form = useForm<ForgotPasswordSchemaType>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -32,10 +32,10 @@ export function ForgotPasswordForm() {
   });
 
   function onSubmit(values: ForgotPasswordSchemaType) {
-    void forgotPasswordAction(values.email);
+    void forgotPassword({ email: values.email });
   }
 
-  if (success) {
+  if (isSuccess) {
     return (
       <div>
         <p className="text-center text-lg font-bold">Revisa tu correo</p>
@@ -51,7 +51,7 @@ export function ForgotPasswordForm() {
       <Form {...form}>
         {error && (
           <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{error.error}</p>
           </div>
         )}
         <form
@@ -71,8 +71,8 @@ export function ForgotPasswordForm() {
             )}
           />
 
-          <Button disabled={loading} type="submit" className="mt-2 w-full">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button disabled={isPending} type="submit" className="mt-2 w-full">
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Restaurar contraseña
           </Button>
         </form>

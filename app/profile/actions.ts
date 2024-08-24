@@ -14,7 +14,7 @@ import { IncorrectCredentialsError, UnauthorizedError } from "@/lib/errors";
 import { authenticatedAction } from "@/lib/server-actions";
 import { z } from "zod";
 
-export const changeData = authenticatedAction
+export const changeDataAction = authenticatedAction
   .createServerAction()
   .input(userDataFormSchema.extend({ userId: z.number() }))
   .handler(async ({ input: { userId, full_name, phone }, ctx: { user } }) => {
@@ -24,7 +24,7 @@ export const changeData = authenticatedAction
     await setSession(userId);
   });
 
-export const changePassword = authenticatedAction
+export const changePasswordAction = authenticatedAction
   .createServerAction()
   .input(
     z.object({
@@ -40,7 +40,7 @@ export const changePassword = authenticatedAction
     }) => {
       if (user.id !== userId) throw new UnauthorizedError();
 
-      if (await userRequireCurrentPasswordToChangeIt(userId)) {
+      if (await userRequireCurrentPasswordToChangeItAction(userId)) {
         const userFromDB = await getUserById(user.id);
         const passwordIsCorrect = await verifyUserPassword(
           userFromDB?.password || "",
@@ -53,7 +53,7 @@ export const changePassword = authenticatedAction
     },
   );
 
-export const userRequireCurrentPasswordToChangeIt = authenticatedAction
+export const userRequireCurrentPasswordToChangeItAction = authenticatedAction
   .createServerAction()
   .input(z.number())
   .handler(async ({ input: userId, ctx: { user } }) => {

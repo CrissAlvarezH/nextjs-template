@@ -15,7 +15,7 @@ import {
   resetPasswordSchema,
   ResetPasswordSchemaType,
 } from "@/app/(auth)/reset-password/validations";
-import { resetPassword } from "@/app/(auth)/reset-password/actions";
+import { resetPasswordAction } from "@/app/(auth)/reset-password/actions";
 import { useServerAction } from "zsa-react";
 
 export function ResetPasswordForm({
@@ -29,8 +29,8 @@ export function ResetPasswordForm({
     error,
     isPending,
     isSuccess,
-    execute: resetPasswordAction,
-  } = useServerAction(resetPassword);
+    execute: resetPassword,
+  } = useServerAction(resetPasswordAction);
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(resetPasswordSchema),
@@ -38,7 +38,7 @@ export function ResetPasswordForm({
   });
 
   function onSubmit(values: ResetPasswordSchemaType) {
-    void resetPasswordAction({
+    void resetPassword({
       userId,
       newPassword: values.password,
       confirmationCode: code,

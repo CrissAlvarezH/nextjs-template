@@ -1,4 +1,4 @@
-import { checkUserCode } from "@/app/(auth)/verify-email/actions";
+import { checkUserCodeAction } from "@/app/(auth)/verify-email/actions";
 
 export default async function VerifyEmailPage({
   searchParams: { id, code },
@@ -15,7 +15,7 @@ export default async function VerifyEmailPage({
       </div>
     );
   }
-  const [_, error] = await checkUserCode({ userId: id, code });
+  const [_, error] = await checkUserCodeAction({ userId: id, code });
   // TODO create generic ui for retry in case of an error
   if (error) {
     return (

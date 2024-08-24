@@ -18,15 +18,17 @@ import {
   userDataFormSchema,
   UserDataFormSchemaType,
 } from "@/app/profile/validations";
-import { changeData } from "@/app/profile/actions";
+import { changeDataAction } from "@/app/profile/actions";
 import { useServerAction } from "zsa-react";
 
 export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   const {
     error,
     isPending,
-    execute: changeDataAction,
-  } = useServerAction(changeData, { onSuccess: () => setOnEditMode(false) });
+    execute: changeData,
+  } = useServerAction(changeDataAction, {
+    onSuccess: () => setOnEditMode(false),
+  });
   const [onEditMode, setOnEditMode] = useState(false);
 
   const form = useForm<UserDataFormSchemaType>({
@@ -38,7 +40,7 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   });
 
   function onSubmit(values: UserDataFormSchemaType) {
-    void changeDataAction({
+    void changeData({
       userId: user.id,
       ...values,
     });

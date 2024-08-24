@@ -15,15 +15,15 @@ import {
   emailPasswordLoginSchema,
   EmailPasswordLoginSchemaType,
 } from "@/app/(auth)/login/validations";
-import { emailPasswordLogin } from "@/app/(auth)/login/actions";
+import { emailPasswordLoginAction } from "@/app/(auth)/login/actions";
 import { useServerAction } from "zsa-react";
 
 export function EmailPasswordLoginForm() {
   const {
     error,
     isPending,
-    execute: emailPasswordLoginAction,
-  } = useServerAction(emailPasswordLogin);
+    execute: emailPasswordLogin,
+  } = useServerAction(emailPasswordLoginAction);
 
   const form = useForm<EmailPasswordLoginSchemaType>({
     resolver: zodResolver(emailPasswordLoginSchema),
@@ -31,7 +31,7 @@ export function EmailPasswordLoginForm() {
   });
 
   function onSubmit(values: EmailPasswordLoginSchemaType) {
-    void emailPasswordLoginAction(values);
+    void emailPasswordLogin(values);
   }
 
   return (

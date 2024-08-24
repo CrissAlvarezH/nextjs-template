@@ -17,7 +17,7 @@ import {
   changePasswordFormSchema,
   ChangePasswordFormSchemaType,
 } from "@/app/profile/validations";
-import { changePassword } from "@/app/profile/actions";
+import { changePasswordAction } from "@/app/profile/actions";
 import { useServerAction } from "zsa-react";
 
 export function ChangePasswordForm({ user }: { user: DatabaseUserAttributes }) {
@@ -25,8 +25,8 @@ export function ChangePasswordForm({ user }: { user: DatabaseUserAttributes }) {
     error,
     isPending,
     isSuccess,
-    execute: changePasswordAction,
-  } = useServerAction(changePassword);
+    execute: changePassword,
+  } = useServerAction(changePasswordAction);
 
   const form = useForm<ChangePasswordFormSchemaType>({
     resolver: zodResolver(changePasswordFormSchema),
@@ -38,7 +38,7 @@ export function ChangePasswordForm({ user }: { user: DatabaseUserAttributes }) {
   });
 
   function onSubmit(values: ChangePasswordFormSchemaType) {
-    void changePasswordAction({
+    void changePassword({
       userId: user.id,
       currentPassword: values.current_password,
       newPassword: values.new_password,
