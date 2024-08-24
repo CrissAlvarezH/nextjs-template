@@ -16,12 +16,12 @@ import {
   EmailPasswordLoginSchemaType,
 } from "@/app/(auth)/login/validations";
 import { emailPasswordLogin } from "@/app/(auth)/login/actions";
-import { useServerAction } from "@/hooks/rsc";
+import { useServerAction } from "zsa-react";
 
 export function EmailPasswordLoginForm() {
   const {
     error,
-    loading,
+    isPending,
     execute: emailPasswordLoginAction,
   } = useServerAction(emailPasswordLogin);
 
@@ -38,7 +38,7 @@ export function EmailPasswordLoginForm() {
     <Form {...form}>
       {error && (
         <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-sm text-red-500">{error.error}</p>
         </div>
       )}
       <form
@@ -71,8 +71,8 @@ export function EmailPasswordLoginForm() {
           )}
         />
 
-        <Button disabled={loading} type="submit" className="mt-2 w-full">
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button disabled={isPending} type="submit" className="mt-2 w-full">
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Ingresar
         </Button>
       </form>

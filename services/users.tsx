@@ -13,6 +13,7 @@ import { sendEmail } from "@/lib/emails";
 import { VerifyEmail } from "@/emails/verify-email";
 import { ResetPassword } from "@/emails/reset-password";
 import { hash, verify } from "@node-rs/argon2";
+import { DatabaseError, UserDoesNotExistsError } from "@/lib/errors";
 
 export async function getUserById(id: number) {
   return db.query.users.findFirst({ where: eq(users.id, id) });
@@ -24,8 +25,8 @@ export async function getUserByEmail(email: string) {
 
 export async function insertUser(user: InsertUser) {
   const res = await db.insert(users).values(user).returning({ id: users.id });
-  if (res.length > 0) return res[0].id;
-  return 0;
+  if (res.length === 0) throw new DatabaseError("Error in insertUser");
+  return res[0].id;
 }
 
 export async function hashPassword(password: string) {
@@ -124,9 +125,7 @@ async function getOrCreateConfirmationEmail(userId: number) {
 
 export async function sendForgotPasswordEmail(email: string) {
   const user = await getUserByEmail(email);
-  if (!user) {
-    throw new Error("user-does-not-exists");
-  }
+  if (!user) throw new UserDoesNotExistsError();
   const code = await getOrCreateConfirmationEmail(user.id);
 
   await sendEmail(
@@ -139,9 +138,7 @@ export async function sendForgotPasswordEmail(email: string) {
 export async function sendConfirmationEmail(userId: number) {
   const user = await getUserById(userId);
 
-  if (!user) {
-    throw new Error(`User with id ${userId} does not exists`);
-  }
+  if (!user) throw new UserDoesNotExistsError();
   if (user.is_email_validated) return;
 
   const code = await getOrCreateConfirmationEmail(user.id);
@@ -180,9 +177,7 @@ export async function confirmationEmailCodeExists(
 
 export async function validateUserEmail(userId: number) {
   const user = await getUserById(userId);
-  if (!user) {
-    throw new Error("user-does-not-exists");
-  }
+  if (!user) throw new UserDoesNotExistsError();
 
   if (user.is_email_validated) return;
 

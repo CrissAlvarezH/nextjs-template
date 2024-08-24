@@ -19,12 +19,12 @@ import {
   UserDataFormSchemaType,
 } from "@/app/profile/validations";
 import { changeData } from "@/app/profile/actions";
-import { useServerAction } from "@/hooks/rsc";
+import { useServerAction } from "zsa-react";
 
 export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   const {
     error,
-    loading,
+    isPending,
     execute: changeDataAction,
   } = useServerAction(changeData, { onSuccess: () => setOnEditMode(false) });
   const [onEditMode, setOnEditMode] = useState(false);
@@ -38,7 +38,10 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   });
 
   function onSubmit(values: UserDataFormSchemaType) {
-    void changeDataAction(user.id, values.full_name, values.phone);
+    void changeDataAction({
+      userId: user.id,
+      ...values,
+    });
   }
 
   return (
@@ -46,7 +49,7 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
       <Form {...form}>
         {error && (
           <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{error.error}</p>
           </div>
         )}
         <form
@@ -122,9 +125,9 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
                 variant="ghost"
                 type="submit"
                 className="self-end text-blue-600"
-                disabled={loading}
+                disabled={isPending}
               >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Guardar
               </Button>
             </div>

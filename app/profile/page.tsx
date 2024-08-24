@@ -10,9 +10,10 @@ export default async function ProfilePage() {
   if (!user.user) {
     redirect("/");
   }
-  const requiresCurrentPassword = await userRequireCurrentPasswordToChangeIt(
-    user.user.id,
-  );
+  const [requiresCurrentPassword, error] =
+    await userRequireCurrentPasswordToChangeIt(user.user.id);
+
+  // TODO create generic ui for retry in case of an error
 
   return (
     <div>

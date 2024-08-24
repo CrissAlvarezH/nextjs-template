@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { signup } from "@/app/(auth)/signup/actions";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useServerAction } from "@/hooks/rsc";
+import { useServerAction } from "zsa-react";
 
 const defaultValues = {
   full_name: "",
@@ -28,7 +28,12 @@ const defaultValues = {
 };
 
 export function SignupForm() {
-  const {error, loading, success, execute: signupAction} = useServerAction(signup)
+  const {
+    error,
+    isPending,
+    isSuccess,
+    execute: signupAction,
+  } = useServerAction(signup);
 
   const form = useForm<SignupSchemaType>({
     resolver: zodResolver(signupSchema),
@@ -36,10 +41,10 @@ export function SignupForm() {
   });
 
   function onSubmit(values: SignupSchemaType) {
-    void signupAction(values)
+    void signupAction(values);
   }
 
-  if (success) {
+  if (isSuccess) {
     return (
       <div>
         <p className="text-center text-lg font-bold">
@@ -58,7 +63,7 @@ export function SignupForm() {
       <Form {...form}>
         {error && (
           <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{error.error}</p>
           </div>
         )}
         <form
@@ -143,8 +148,8 @@ export function SignupForm() {
             )}
           />
 
-          <Button disabled={loading} type="submit" className="mt-3 w-full">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button disabled={isPending} type="submit" className="mt-3 w-full">
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Registrarme
           </Button>
         </form>

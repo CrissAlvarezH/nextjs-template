@@ -10,60 +10,61 @@ import {
 } from "@/services/users";
 import { userDataFormSchema } from "@/app/profile/validations";
 import { passwordSchema } from "@/app/(auth)/reset-password/validations";
+import { IncorrectCredentialsError, UnauthorizedError } from "@/lib/errors";
+import { authenticatedAction } from "@/lib/server-actions";
+import { z } from "zod";
 
-export async function changeData(
-  userId: number,
-  fullName: string,
-  phone: string,
-) {
-  const error = userDataFormSchema.safeParse({
-    full_name: fullName,
-    phone,
-  }).error;
-  if (error) return { error: error.message };
+export const changeData = authenticatedAction
+  .createServerAction()
+  .input(userDataFormSchema.extend({ userId: z.number() }))
+  .handler(async ({ input: { userId, full_name, phone }, ctx: { user } }) => {
+    if (user.id !== userId) throw new UnauthorizedError();
 
-  const user = await validateRequest();
-  if (!user.user) return { error: "Usuario no autenticado" };
-  if (user.user.id !== userId)
-    return { error: "No tienes permiso para realizar esta acción" };
+    await updateUserData(userId, full_name, phone);
+    await setSession(userId);
+  });
 
-  await updateUserData(userId, fullName, phone);
-  await setSession(userId);
-}
+export const changePassword = authenticatedAction
+  .createServerAction()
+  .input(
+    z.object({
+      userId: z.number(),
+      currentPassword: z.string(),
+      newPassword: passwordSchema,
+    }),
+  )
+  .handler(
+    async ({
+      input: { userId, currentPassword, newPassword },
+      ctx: { user },
+    }) => {
+      if (user.id !== userId) throw new UnauthorizedError();
 
-export async function changePassword(
-  userId: number,
-  currentPassword: string,
-  newPassword: string,
-) {
-  const error = passwordSchema.safeParse(newPassword).error;
-  if (error) return { error: error.message };
+      if (await userRequireCurrentPasswordToChangeIt(userId)) {
+        const userFromDB = await getUserById(user.id);
+        const passwordIsCorrect = await verifyUserPassword(
+          userFromDB?.password || "",
+          currentPassword,
+        );
+        if (!passwordIsCorrect) throw new IncorrectCredentialsError();
+      }
 
-  const user = await validateRequest();
-  if (!user.user) return { error: "Usuario no autenticado" };
-  if (user.user.id !== userId)
-    return { error: "No tienes permiso para realizar esta acción" };
+      await updateUserPassword(userId, newPassword);
+    },
+  );
 
-  if (await userRequireCurrentPasswordToChangeIt(userId)) {
-    const userFromDB = await getUserById(user.user.id);
-    const passwordIsCorrect = await verifyUserPassword(
-      userFromDB?.password || "",
-      currentPassword,
-    );
-    if (!passwordIsCorrect) return { error: "Contraseña incorrecta" };
-  }
+export const userRequireCurrentPasswordToChangeIt = authenticatedAction
+  .createServerAction()
+  .input(z.number())
+  .handler(async ({ input: userId, ctx: { user } }) => {
+    // If user logged in with an oauth provider like google then he can set a password without
+    // validate its current password because he doesn't have one, but after set one it will need
+    // to validate his current password to be able to change it
+    if (userId !== user.id) throw new UnauthorizedError();
 
-  await updateUserPassword(userId, newPassword);
-}
+    const oauthProvider = await getUserOAuthProvider(userId);
+    if (!oauthProvider) return true;
 
-export async function userRequireCurrentPasswordToChangeIt(userId: number) {
-  // If user logged in with an oauth provider like google then he can set a password without
-  // validate its current password because he doesn't have one, but after set one it will need
-  // to validate his current password to be able to change it
-
-  const oauthProvider = await getUserOAuthProvider(userId);
-  if (!oauthProvider) return true;
-
-  const user = await getUserById(userId);
-  return user?.password !== "";
-}
+    const userFromDB = await getUserById(userId);
+    return userFromDB?.password !== "";
+  });

@@ -15,8 +15,9 @@ export default async function VerifyEmailPage({
       </div>
     );
   }
-  const error = await checkUserCode(id, code);
-  if (error && error.error) {
+  const [_, error] = await checkUserCode({ userId: id, code });
+  // TODO create generic ui for retry in case of an error
+  if (error) {
     return (
       <div className="flex justify-center py-5">
         <p className="text-lg text-red-600">{error.error}</p>

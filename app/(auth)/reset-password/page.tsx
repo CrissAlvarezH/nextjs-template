@@ -19,7 +19,7 @@ export default async function ResetPasswordPage({
     );
   }
 
-  const isValid = await justValidateEmailVerificationCode(id, code);
+  const isValid = await justValidateEmailVerificationCode({ userId: id, code });
   if (!isValid) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 px-3 py-5">

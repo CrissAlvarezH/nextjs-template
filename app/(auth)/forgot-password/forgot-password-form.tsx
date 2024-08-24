@@ -16,10 +16,15 @@ import {
   ForgotPasswordSchemaType,
 } from "@/app/(auth)/forgot-password/validations";
 import { forgotPassword } from "@/app/(auth)/forgot-password/actions";
-import { useServerAction } from "@/hooks/rsc";
+import { useServerAction } from "@/hooks/actions-hooks";
 
 export function ForgotPasswordForm() {
-  const {error, loading, success, execute: forgotPasswordAction} = useServerAction(forgotPassword)
+  const {
+    error,
+    loading,
+    success,
+    execute: forgotPasswordAction,
+  } = useServerAction(forgotPassword);
 
   const form = useForm<ForgotPasswordSchemaType>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -27,7 +32,7 @@ export function ForgotPasswordForm() {
   });
 
   function onSubmit(values: ForgotPasswordSchemaType) {
-    void forgotPasswordAction(values.email)
+    void forgotPasswordAction(values.email);
   }
 
   if (success) {

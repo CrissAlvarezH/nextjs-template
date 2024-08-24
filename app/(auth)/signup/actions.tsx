@@ -5,33 +5,23 @@ import {
   insertUser,
   sendConfirmationEmail,
 } from "@/services/users";
-import {
-  signupSchema,
-  SignupSchemaType,
-} from "@/app/(auth)/signup/validations";
+import { signupSchema } from "@/app/(auth)/signup/validations";
+import { EmailTakenError } from "@/lib/errors";
+import { unauthenticatedAction } from "@/lib/server-actions";
 
-export async function signup(data: SignupSchemaType) {
-  const error = signupSchema.safeParse(data).error;
-  if (error) return { error: error.message };
+export const signup = unauthenticatedAction
+  .createServerAction()
+  .input(signupSchema)
+  .handler(async ({ input: data }) => {
+    const user = await getUserByEmail(data.email);
+    if (user) throw new EmailTakenError();
 
-  const user = await getUserByEmail(data.email);
-  if (user) return { error: "El email ya esta siendo usado" };
+    const userId = await insertUser({
+      name: data.full_name,
+      email: data.email,
+      phone: data.phone,
+      password: await hashPassword(data.password),
+    });
 
-  const userId = await insertUser({
-    name: data.full_name,
-    email: data.email,
-    phone: data.phone,
-    password: await hashPassword(data.password),
-  });
-  if (userId === 0)
-    return { error: "Error al guardar ususario en base de datos" };
-
-  try {
     await sendConfirmationEmail(userId);
-  } catch (error) {
-    console.log("Error on send confirmation email", error);
-    return {
-      error: "Ocurrió un inconveniente enviando el email, intente mas tarde",
-    };
-  }
-}
+  });

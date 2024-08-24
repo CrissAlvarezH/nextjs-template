@@ -16,7 +16,7 @@ import {
   ResetPasswordSchemaType,
 } from "@/app/(auth)/reset-password/validations";
 import { resetPassword } from "@/app/(auth)/reset-password/actions";
-import { useServerAction } from "@/hooks/rsc";
+import { useServerAction } from "zsa-react";
 
 export function ResetPasswordForm({
   userId,
@@ -27,8 +27,8 @@ export function ResetPasswordForm({
 }) {
   const {
     error,
-    loading,
-    success,
+    isPending,
+    isSuccess,
     execute: resetPasswordAction,
   } = useServerAction(resetPassword);
 
@@ -38,10 +38,14 @@ export function ResetPasswordForm({
   });
 
   function onSubmit(values: ResetPasswordSchemaType) {
-    void resetPasswordAction(userId, values.password, code);
+    void resetPasswordAction({
+      userId,
+      newPassword: values.password,
+      confirmationCode: code,
+    });
   }
 
-  if (success) {
+  if (isSuccess) {
     return (
       <div>
         <p className="text-center text-lg font-bold">
@@ -59,7 +63,7 @@ export function ResetPasswordForm({
       <Form {...form}>
         {error && (
           <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{error.error}</p>
           </div>
         )}
         <form
@@ -100,8 +104,8 @@ export function ResetPasswordForm({
             )}
           />
 
-          <Button disabled={loading} type="submit" className="mt-2 w-full">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button disabled={isPending} type="submit" className="mt-2 w-full">
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Restaurar contraseña
           </Button>
         </form>

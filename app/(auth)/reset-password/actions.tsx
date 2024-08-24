@@ -3,34 +3,39 @@ import {
   confirmationEmailCodeExists,
   validateUserEmail,
 } from "@/services/users";
-import { passwordSchema } from "@/app/(auth)/reset-password/validations";
+import { InvalidLinkError } from "@/lib/errors";
+import { unauthenticatedAction } from "@/lib/server-actions";
+import { z } from "zod";
 
-export async function justValidateEmailVerificationCode(
-  userId: number,
-  code: string,
-) {
-  // validate without delete it
-  return await confirmationEmailCodeExists(userId, code, false);
-}
+export const justValidateEmailVerificationCode = unauthenticatedAction
+  .createServerAction()
+  .input(z.object({ userId: z.number(), code: z.string() }))
+  .handler(async ({ input: { userId, code } }) => {
+    // validate without delete it
+    return await confirmationEmailCodeExists(userId, code, false);
+  });
 
-export async function resetPassword(
-  userId: number,
-  newPassword: string,
-  confirmationCode: string,
-) {
-  const error = passwordSchema.safeParse(newPassword).error;
-  if (error) return { error: error.message };
-  const isValid = await confirmationEmailCodeExists(
-    userId,
-    confirmationCode,
-    true,
-  );
-  if (!isValid) return { error: "Enlace invalido" };
+export const resetPassword = unauthenticatedAction
+  .createServerAction()
+  .input(
+    z.object({
+      userId: z.number(),
+      newPassword: z.string().min(6, "Minimo 6 caracteres"),
+      confirmationCode: z.string(),
+    }),
+  )
+  .handler(async ({ input: { userId, newPassword, confirmationCode } }) => {
+    const isValid = await confirmationEmailCodeExists(
+      userId,
+      confirmationCode,
+      true,
+    );
+    if (!isValid) throw new InvalidLinkError();
 
-  await updateUserPassword(userId, newPassword);
-  try {
-    // just in case the user change his password before validate it, we mark as validated
-    // because its email is validated to restore its password
-    await validateUserEmail(userId);
-  } catch (error) {}
-}
+    await updateUserPassword(userId, newPassword);
+    try {
+      // just in case the user change his password before validate it, we mark as validated
+      // because its email is validated to restore its password
+      await validateUserEmail(userId);
+    } catch (error) {}
+  });

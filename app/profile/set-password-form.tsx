@@ -18,13 +18,13 @@ import {
   SetPasswordFormSchemaType,
 } from "@/app/profile/validations";
 import { changePassword } from "@/app/profile/actions";
-import { useServerAction } from "@/hooks/rsc";
+import { useServerAction } from "zsa-react";
 
 export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
   const {
     error,
-    success,
-    loading,
+    isSuccess,
+    isPending,
     execute: changePasswordAction,
   } = useServerAction(changePassword);
 
@@ -37,13 +37,17 @@ export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
   });
 
   function onSubmit(values: SetPasswordFormSchemaType) {
-    void changePasswordAction(user.id, "", values.new_password);
+    void changePasswordAction({
+      userId: user.id,
+      currentPassword: "",
+      newPassword: values.new_password,
+    });
   }
 
   return (
     <>
       <Form {...form}>
-        {success && (
+        {isSuccess && (
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-green-500 px-2 py-1">
             <p className="text-sm text-green-700">
               Contraseña establecida exitosamente
@@ -59,7 +63,7 @@ export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
         )}
         {error && (
           <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-sm text-red-500">{error.error}</p>
           </div>
         )}
         <form
@@ -103,9 +107,9 @@ export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
             variant="ghost"
             type="submit"
             className="self-end text-blue-600"
-            disabled={loading}
+            disabled={isPending}
           >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Guardar
           </Button>
         </form>
