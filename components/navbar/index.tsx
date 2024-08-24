@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserNavButton } from "@/components/navbar/user-nav-btn";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function Navbar() {
   return (
@@ -12,7 +13,7 @@ export default async function Navbar() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <Suspense fallback={<p>Cargando...</p>}>
+          <Suspense fallback={<Skeleton className="h-5 w-20" />}>
             <UserNavButton />
           </Suspense>
         </div>

@@ -10,6 +10,7 @@ import { LogoutButton } from "@/components/navbar/logout-btn";
 
 export async function UserNavButton() {
   const user = await validateRequest();
+
   return (
     <>
       {user.user ? (
