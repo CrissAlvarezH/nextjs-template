@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { OAuth2RequestError } from "arctic";
-import { googleAuth, lucia, setSession } from "@/lib/auth";
-import { createGoogleUser, getAccountByGoogleId } from "@/services/users";
+import { googleAuth, setSession } from "@/lib/auth";
+import { createGoogleUserService } from "@/services/users";
+import { getAccountByGoogleId } from "@/repositories/users";
 
 const afterLoginUrl = "/";
 
@@ -51,7 +52,7 @@ export async function GET(request: Request): Promise<Response> {
       });
     }
 
-    const userId = await createGoogleUser(googleUser);
+    const userId = await createGoogleUserService(googleUser);
     await setSession(userId);
     return new Response(null, {
       status: 302,

@@ -72,7 +72,7 @@ export function SignupForm() {
         >
           <FormField
             control={form.control}
-            name="full_name"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre completo</FormLabel>

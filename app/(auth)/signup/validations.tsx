@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const signupSchema = z
   .object({
-    full_name: z
+    name: z
       .string()
       .min(2, "Minimo 2 caracteres")
       .max(200, "Maximo 200 caracteres")

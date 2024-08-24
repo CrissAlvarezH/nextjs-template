@@ -1,32 +1,78 @@
 "use server";
 
-import { db } from "@/db";
-import {
-  accounts,
-  confirmationEmailCode,
-  InsertUser,
-  users,
-} from "@/db/schemas/users";
-import { and, eq } from "drizzle-orm";
 import { GoogleUser } from "@/app/api/login/google/callback/route";
 import { sendEmail } from "@/lib/emails";
 import { VerifyEmail } from "@/emails/verify-email";
 import { ResetPassword } from "@/emails/reset-password";
 import { hash, verify } from "@node-rs/argon2";
-import { DatabaseError, UserDoesNotExistsError } from "@/lib/errors";
+import {
+  EmailNotValidatedError,
+  EmailTakenError,
+  IncorrectAuthMethodError,
+  IncorrectCredentialsError,
+  InvalidLinkError,
+  UserDoesNotExistsError,
+} from "@/lib/errors";
+import {
+  createGoogleAccount,
+  deleteEmailConfirmationCode,
+  getEmailConfirmationCode,
+  getOrCreateConfirmationEmail,
+  getUserByEmail,
+  getUserById,
+  getUserOAuthProvider,
+  insertUser,
+  updateUserData,
+  updateUserPassword,
+  validateUserEmail,
+} from "@/repositories/users";
+import { lucia, setSession } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { InsertUser } from "@/db/schemas/users";
+import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
 
-export async function getUserById(id: number) {
-  return db.query.users.findFirst({ where: eq(users.id, id) });
+export async function emailAndPasswordLoginService(
+  email: string,
+  password: string,
+) {
+  const user = await getUserByEmail(email);
+  if (!user) {
+    // NOTE:
+    // Returning immediately allows malicious actors to figure out valid usernames from response times,
+    // allowing them to only focus on guessing passwords in brute-force attacks.
+    // As a preventive measure, you may want to hash passwords even for invalid usernames.
+    // However, valid usernames can be already be revealed with the signup page among other methods.
+    // It will also be much more resource intensive.
+    // Since protecting against this is non-trivial,
+    // it is crucial your implementation is protected against brute-force attacks with login throttling etc.
+    // If usernames are public, you may outright tell the user that the username is invalid.
+    throw new IncorrectCredentialsError();
+  }
+
+  if (!user.password || user.password === "")
+    throw new IncorrectAuthMethodError();
+
+  const validPassword = await verifyUserPassword(user.password, password);
+  if (!validPassword) throw new IncorrectCredentialsError();
+
+  if (!user.is_email_validated) {
+    // send again
+    await sendConfirmationEmailService(user.id);
+    throw new EmailNotValidatedError();
+  }
+
+  await setSession(user.id);
 }
 
-export async function getUserByEmail(email: string) {
-  return db.query.users.findFirst({ where: eq(users.email, email) });
-}
+export async function logoutService(userId: number) {
+  await lucia.invalidateUserSessions(userId);
 
-export async function insertUser(user: InsertUser) {
-  const res = await db.insert(users).values(user).returning({ id: users.id });
-  if (res.length === 0) throw new DatabaseError("Error in insertUser");
-  return res[0].id;
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  );
 }
 
 export async function hashPassword(password: string) {
@@ -38,14 +84,15 @@ export async function hashPassword(password: string) {
   });
 }
 
-export async function getUserOAuthProvider(userId: number) {
-  const account = await db.query.accounts.findFirst({
-    where: eq(accounts.userId, userId),
-  });
-  if (!account) return null;
-  return account.providerId;
+export async function confirmationEmailCodeExistsService(
+  userId: number,
+  code: string,
+  deleteAfter: boolean,
+) {
+  const confirmationCode = getEmailConfirmationCode(userId, code);
+  if (deleteAfter) await deleteEmailConfirmationCode(userId, code);
+  return !!confirmationCode;
 }
-
 export async function verifyUserPassword(hashed: string, password: string) {
   return await verify(hashed, password, {
     memoryCost: 19456,
@@ -55,87 +102,107 @@ export async function verifyUserPassword(hashed: string, password: string) {
   });
 }
 
-export async function updateUserData(
+export async function resetUserPasswordService(
   userId: number,
-  fullName: string,
+  confirmationCode: string,
+  newPassword: string,
+) {
+  const isValid = await confirmationEmailCodeExistsService(
+    userId,
+    confirmationCode,
+    true,
+  );
+  if (!isValid) throw new InvalidLinkError();
+
+  await updateUserPassword(userId, newPassword);
+  try {
+    // just in case the user change his password before validate it, we mark as validated
+    // because its email is validated to restore its password
+    await validateUserEmail(userId);
+  } catch (error) {}
+}
+
+export async function signupService(data: InsertUser) {
+  const user = await getUserByEmail(data.email);
+  if (user) throw new EmailTakenError();
+
+  const createdUser = await insertUser({
+    ...data,
+    password: await hashPassword(data.password),
+  });
+
+  await sendConfirmationEmailService(createdUser.id);
+}
+
+export async function validateUserEmailService(userId: number, code: string) {
+  const user = await getUserById(userId);
+  if (!user) throw new InvalidLinkError();
+
+  if (user.is_email_validated) return;
+
+  const isValid = await confirmationEmailCodeExistsService(userId, code, true);
+  if (!isValid) throw new InvalidLinkError();
+
+  await validateUserEmail(userId);
+}
+
+export async function changeUserDataService(
+  userId: number,
+  name: string,
   phone: string,
 ) {
-  await db
-    .update(users)
-    .set({ name: fullName, phone })
-    .where(eq(users.id, userId));
+  await updateUserData(userId, name, phone);
+  await setSession(userId);
 }
 
-export async function updateUserPassword(userId: number, newPassword: string) {
-  const hashed = await hashPassword(newPassword);
-  await db.update(users).set({ password: hashed }).where(eq(users.id, userId));
-}
-
-export async function getAccountByGoogleId(googleUserId: string) {
-  return db.query.accounts.findFirst({
-    where: and(
-      eq(accounts.providerId, "google"),
-      eq(accounts.providerUserId, googleUserId),
-    ),
-  });
-}
-
-export async function createGoogleUser(googleUser: GoogleUser) {
-  let user = await getUserByEmail(googleUser.email);
-  if (!user) {
-    // create user
-    [user] = await db
-      .insert(users)
-      .values({
-        name: googleUser.name,
-        email: googleUser.email,
-        is_email_validated: true,
-        password: "",
-      })
-      .returning();
+export async function changeUserPasswordService(
+  userId: number,
+  currentPassword: string,
+  newPassword: string,
+) {
+  if (await userRequireCurrentPasswordToChangeItAction(userId)) {
+    const userFromDB = await getUserById(userId);
+    const passwordIsCorrect = await verifyUserPassword(
+      userFromDB?.password || "",
+      currentPassword,
+    );
+    if (!passwordIsCorrect) throw new IncorrectCredentialsError();
   }
 
-  // create google account
-  await db
-    .insert(accounts)
-    .values({
-      providerId: "google",
-      providerUserId: googleUser.sub,
-      userId: user.id,
-    })
-    .onConflictDoNothing();
+  await updateUserPassword(userId, newPassword);
+}
 
+export async function isOAuthUserAndPasswordEmptyService(userId: number) {
+  // If user logged in with an oauth provider like google then he can set a password without
+  // validate its current password because he doesn't have one, but after set one it will need
+  // to validate his current password to be able to change it
+  const oauthProvider = await getUserOAuthProvider(userId);
+  if (!oauthProvider) return true;
+
+  const userFromDB = await getUserById(userId);
+  return userFromDB?.password !== "";
+}
+
+export async function createGoogleUserService(googleUser: GoogleUser) {
+  let user = await getUserByEmail(googleUser.email);
+  if (!user) {
+    user = await insertUser({
+      name: googleUser.name,
+      email: googleUser.email,
+      is_email_validated: true,
+      password: "",
+    });
+  }
+
+  await createGoogleAccount({
+    providerId: "google",
+    providerUserId: googleUser.sub,
+    userId: user.id,
+  });
   return user.id;
 }
 
-async function getOrCreateConfirmationEmail(userId: number) {
-  let confirmationCode = await db.query.confirmationEmailCode.findFirst({
-    where: eq(confirmationEmailCode.userId, userId),
-  });
-
-  if (!confirmationCode) {
-    const code = Math.floor(10000 + Math.random() * 90000).toString();
-    [confirmationCode] = await db
-      .insert(confirmationEmailCode)
-      .values({ userId, code })
-      .returning();
-  }
-  return confirmationCode.code;
-}
-
-export async function sendForgotPasswordEmail(email: string) {
-  const user = await getUserByEmail(email);
-  if (!user) throw new UserDoesNotExistsError();
-  const code = await getOrCreateConfirmationEmail(user.id);
-
-  await sendEmail(
-    user.email,
-    "Restablecer contraseña",
-    <ResetPassword userId={user.id} code={code} />,
-  );
-}
-
-export async function sendConfirmationEmail(userId: number) {
+export async function sendConfirmationEmailService(userId: number) {
   const user = await getUserById(userId);
 
   if (!user) throw new UserDoesNotExistsError();
@@ -150,39 +217,14 @@ export async function sendConfirmationEmail(userId: number) {
   );
 }
 
-export async function confirmationEmailCodeExists(
-  userId: number,
-  code: string,
-  deleteAfter: boolean,
-) {
-  const confirmationCode = await db.query.confirmationEmailCode.findFirst({
-    where: and(
-      eq(confirmationEmailCode.userId, userId),
-      eq(confirmationEmailCode.code, code),
-    ),
-  });
-  if (deleteAfter) {
-    await db
-      .delete(confirmationEmailCode)
-      .where(
-        and(
-          eq(confirmationEmailCode.userId, userId),
-          eq(confirmationEmailCode.code, code),
-        ),
-      );
-  }
-
-  return !!confirmationCode;
-}
-
-export async function validateUserEmail(userId: number) {
-  const user = await getUserById(userId);
+export async function sendForgotPasswordEmailService(email: string) {
+  const user = await getUserByEmail(email);
   if (!user) throw new UserDoesNotExistsError();
+  const code = await getOrCreateConfirmationEmail(user.id);
 
-  if (user.is_email_validated) return;
-
-  await db
-    .update(users)
-    .set({ is_email_validated: true })
-    .where(eq(users.id, userId));
+  await sendEmail(
+    user.email,
+    "Restablecer contraseña",
+    <ResetPassword userId={user.id} code={code} />,
+  );
 }

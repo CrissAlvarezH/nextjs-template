@@ -44,6 +44,8 @@ export const sessions = pgTable("sessions", {
   }).notNull(),
 });
 
+export type SelectSession = typeof sessions.$inferSelect;
+
 export const accounts = pgTable(
   "accounts",
   {
@@ -58,4 +60,5 @@ export const accounts = pgTable(
   }),
 );
 
-export type SelectSession = typeof sessions.$inferSelect;
+export type InsertAccount = typeof accounts.$inferInsert;
+export type SelectAccount = typeof accounts.$inferSelect;

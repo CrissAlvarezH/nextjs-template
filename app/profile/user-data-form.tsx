@@ -34,7 +34,7 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   const form = useForm<UserDataFormSchemaType>({
     resolver: zodResolver(userDataFormSchema),
     defaultValues: {
-      full_name: user.name,
+      name: user.name,
       phone: user.phone || "",
     },
   });
@@ -60,7 +60,7 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
         >
           <FormField
             control={form.control}
-            name="full_name"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre completo</FormLabel>

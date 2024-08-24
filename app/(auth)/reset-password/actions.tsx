@@ -1,9 +1,8 @@
+"use server";
 import {
-  updateUserPassword,
-  confirmationEmailCodeExists,
-  validateUserEmail,
+  confirmationEmailCodeExistsService,
+  resetUserPasswordService,
 } from "@/services/users";
-import { InvalidLinkError } from "@/lib/errors";
 import { unauthenticatedAction } from "@/lib/server-actions";
 import { z } from "zod";
 
@@ -12,7 +11,7 @@ export const validateEmailVerificationCodeAction = unauthenticatedAction
   .input(z.object({ userId: z.number(), code: z.string() }))
   .handler(async ({ input: { userId, code } }) => {
     // validate without delete it
-    return await confirmationEmailCodeExists(userId, code, false);
+    return await confirmationEmailCodeExistsService(userId, code, false);
   });
 
 export const resetPasswordAction = unauthenticatedAction
@@ -25,17 +24,5 @@ export const resetPasswordAction = unauthenticatedAction
     }),
   )
   .handler(async ({ input: { userId, newPassword, confirmationCode } }) => {
-    const isValid = await confirmationEmailCodeExists(
-      userId,
-      confirmationCode,
-      true,
-    );
-    if (!isValid) throw new InvalidLinkError();
-
-    await updateUserPassword(userId, newPassword);
-    try {
-      // just in case the user change his password before validate it, we mark as validated
-      // because its email is validated to restore its password
-      await validateUserEmail(userId);
-    } catch (error) {}
+    await resetUserPasswordService(userId, confirmationCode, newPassword);
   });

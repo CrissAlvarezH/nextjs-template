@@ -1,12 +1,13 @@
+import "server-only";
 import { Lucia } from "lucia";
 import { db } from "@/db";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { users, sessions } from "@/db/schemas";
 import { SelectSession, SelectUser } from "@/db/schemas/users";
-import { cookies } from "next/headers";
 import { cache } from "react";
 import { Google } from "arctic";
 import { env } from "@/env";
+import { cookies } from "next/headers";
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
