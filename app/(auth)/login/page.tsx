@@ -3,6 +3,9 @@ import { EmailPasswordLoginForm } from "@/app/(auth)/login/email-password-login-
 import { Button } from "@/components/ui/button";
 import { GoogleLoginButton } from "@/app/(auth)/login/google-login-btn";
 
+// TODO check if user is logged first
+// TODO put it in a modal
+// TODO implement callback url
 export default async function LoginPage() {
   return (
     <div>
