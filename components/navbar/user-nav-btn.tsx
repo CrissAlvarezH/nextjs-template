@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { validateRequest } from "@/lib/auth";
 import { LogoutButton } from "@/components/navbar/logout-btn";
+import { GoToLoginButton } from "@/components/navbar/go-to-login-btn";
 
 export async function UserNavButton() {
   const user = await validateRequest();
@@ -39,9 +40,7 @@ export async function UserNavButton() {
           </PopoverContent>
         </Popover>
       ) : (
-        <Link href="/login">
-          <Button variant="link">Ingresar</Button>
-        </Link>
+        <GoToLoginButton />
       )}
     </>
   );

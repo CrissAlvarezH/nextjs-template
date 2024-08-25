@@ -18,7 +18,11 @@ import {
 import { emailPasswordLoginAction } from "@/app/(auth)/login/actions";
 import { useServerAction } from "zsa-react";
 
-export function EmailPasswordLoginForm() {
+export function EmailPasswordLoginForm({
+  callbackUrl,
+}: {
+  callbackUrl: string;
+}) {
   const {
     error,
     isPending,
@@ -31,7 +35,7 @@ export function EmailPasswordLoginForm() {
   });
 
   function onSubmit(values: EmailPasswordLoginSchemaType) {
-    void emailPasswordLogin(values);
+    void emailPasswordLogin({ ...values, callbackUrl });
   }
 
   return (

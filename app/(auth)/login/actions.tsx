@@ -6,13 +6,15 @@ import {
   authenticatedAction,
   unauthenticatedAction,
 } from "@/lib/server-actions";
+import { z } from "zod";
 
 export const emailPasswordLoginAction = unauthenticatedAction
   .createServerAction()
-  .input(emailPasswordLoginSchema)
+  .input(emailPasswordLoginSchema.extend({ callbackUrl: z.string().min(0) }))
   .handler(async ({ input: data }) => {
     await emailAndPasswordLoginService(data.email, data.password);
-    redirect("/");
+    console.log("redirect", data.callbackUrl);
+    redirect(data.callbackUrl);
   });
 
 export const logoutAction = authenticatedAction
