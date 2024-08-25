@@ -1,6 +1,5 @@
 import { Login } from "@/app/(auth)/login/login";
 
-// TODO check if user is logged first
 export default async function LoginPage({
   searchParams: { callbackUrl = "/" },
 }: {

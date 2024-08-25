@@ -1,9 +1,28 @@
+"use client";
 import Link from "next/link";
 import { GoogleLoginButton } from "@/app/(auth)/login/google-login-btn";
 import { EmailPasswordLoginForm } from "@/app/(auth)/login/email-password-login-form";
 import { Button } from "@/components/ui/button";
+import { useServerAction } from "zsa-react";
+import { isUserAlreadyLoggedInAction } from "@/app/(auth)/login/actions";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function Login({ callbackUrl }: { callbackUrl: string }) {
+  const router = useRouter();
+  const { execute: isUserAlreadyLoggedIn } = useServerAction(
+    isUserAlreadyLoggedInAction,
+    {
+      onSuccess: (res) => {
+        if (res.data) router.replace(callbackUrl);
+      },
+    },
+  );
+
+  useEffect(() => {
+    void isUserAlreadyLoggedIn();
+  }, []);
+
   return (
     <>
       <p className="pb-4 text-center text-lg font-bold">Ingresa a tu cuenta</p>

@@ -31,7 +31,7 @@ export function LogoutButton() {
             <DialogTitle>¿Seguro que quieres cerrar sesión?</DialogTitle>
             <DialogDescription>
               <div className="flex justify-end pt-7">
-                <Button onClick={() => logout()}>
+                <Button disabled={isPending} onClick={() => logout()}>
                   {isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
