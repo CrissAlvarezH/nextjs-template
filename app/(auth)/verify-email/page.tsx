@@ -16,7 +16,6 @@ export default async function VerifyEmailPage({
     );
   }
   const [_, error] = await checkUserCodeAction({ userId: id, code });
-  // TODO create generic ui for retry in case of an error
   if (error) {
     return (
       <div className="flex justify-center py-5">

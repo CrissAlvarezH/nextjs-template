@@ -19,7 +19,7 @@ export default async function ResetPasswordPage({
     );
   }
 
-  const isValid = await validateEmailVerificationCodeAction({
+  const [isValid] = await validateEmailVerificationCodeAction({
     userId: id,
     code,
   });
