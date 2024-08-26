@@ -8,6 +8,8 @@ import Link from "next/link";
 import { validateRequest } from "@/lib/auth";
 import { LogoutButton } from "@/components/navbar/logout-btn";
 import { GoToLoginButton } from "@/components/navbar/go-to-login-btn";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/images";
 
 export async function UserNavButton() {
   const user = await validateRequest();
@@ -18,7 +20,21 @@ export async function UserNavButton() {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
-              Hi, {user.user?.name.split(" ")[0]}
+              <div className="flex items-center gap-2">
+                <Image
+                  width={100}
+                  height={100}
+                  src={getImageUrl(
+                    user.user.picture,
+                    "/profile-picture-empty.jpg",
+                  )}
+                  placeholder="blur"
+                  blurDataURL={user.user.pictureHash}
+                  className="h-7 w-7 rounded-full object-cover"
+                  alt="User profile picture"
+                />
+                {user.user?.name.split(" ")[0]}
+              </div>
             </Button>
           </PopoverTrigger>
           <PopoverContent>

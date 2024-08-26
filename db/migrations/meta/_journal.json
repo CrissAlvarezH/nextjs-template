@@ -22,6 +22,27 @@
       "when": 1723782003568,
       "tag": "0002_brave_vindicator",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1724606182988,
+      "tag": "0003_pale_frank_castle",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1724625145584,
+      "tag": "0004_sharp_stardust",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1724653697010,
+      "tag": "0005_watery_professor_monster",
+      "breakpoints": true
     }
   ]
 }

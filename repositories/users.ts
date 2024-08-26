@@ -49,6 +49,18 @@ export async function updateUserData(
     .where(eq(users.id, userId));
 }
 
+export async function updateUserPicture(
+  userId: number,
+  picturePath: string,
+  blurHash: string,
+) {
+  return db
+    .update(users)
+    .set({ picture: picturePath, pictureHash: blurHash })
+    .where(eq(users.id, userId))
+    .returning();
+}
+
 export async function updateUserPassword(userId: number, newPassword: string) {
   const hashed = await hashPassword(newPassword);
   await db.update(users).set({ password: hashed }).where(eq(users.id, userId));
@@ -83,7 +95,7 @@ export async function getOrCreateConfirmationEmail(userId: number) {
 }
 
 export async function getEmailConfirmationCode(userId: number, code: string) {
-  return await db.query.confirmationEmailCode.findFirst({
+  return db.query.confirmationEmailCode.findFirst({
     where: and(
       eq(confirmationEmailCode.userId, userId),
       eq(confirmationEmailCode.code, code),

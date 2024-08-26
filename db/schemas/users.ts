@@ -11,6 +11,8 @@ import {
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
+  picture: varchar("picture"),
+  pictureHash: varchar("picture_hash").notNull(),
   name: varchar("name", { length: 250 }).notNull(),
   email: varchar("email", { length: 250 }).notNull(),
   is_email_validated: boolean("is_email_validated").default(false),
