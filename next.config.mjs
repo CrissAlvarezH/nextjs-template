@@ -4,8 +4,13 @@ const nextConfig = {
     serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
   images: {
-    // TODO this is deprecated, use patterns instead
-    domains: ["nextjs-template-public.s3.us-east-1.amazonaws.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "nextjs-template-public.s3.amazonaws.com",
+        pathname: "/**",
+      },
+    ],
   },
 };
 
