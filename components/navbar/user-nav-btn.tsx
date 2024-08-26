@@ -9,7 +9,7 @@ import { validateRequest } from "@/lib/auth";
 import { LogoutButton } from "@/components/navbar/logout-btn";
 import { GoToLoginButton } from "@/components/navbar/go-to-login-btn";
 import Image from "next/image";
-import { getImageUrl } from "@/lib/images";
+import { getImageUrl } from "@/lib/utils";
 
 export async function UserNavButton() {
   const user = await validateRequest();
@@ -29,7 +29,7 @@ export async function UserNavButton() {
                     "/profile-picture-empty.jpg",
                   )}
                   placeholder="blur"
-                  blurDataURL={user.user.pictureHash}
+                  blurDataURL={user.user.pictureHash || ""}
                   className="h-7 w-7 rounded-full object-cover"
                   alt="User profile picture"
                 />

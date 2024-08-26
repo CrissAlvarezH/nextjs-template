@@ -24,12 +24,17 @@ import {
   insertUser,
   updateUserData,
   updateUserPassword,
+  updateUserPicture,
   validateUserEmail,
 } from "@/repositories/users";
 import { lucia, setSession } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { InsertUser } from "@/db/schemas/users";
 import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
+import { v4 as uuidv4 } from "uuid";
+import { uploadFileToBucket } from "@/lib/files";
+import { generateThumbnailHash } from "@/lib/images";
+import { redirect } from "next/navigation";
 
 export async function emailAndPasswordLoginService(
   email: string,
@@ -200,6 +205,20 @@ export async function createGoogleUserService(googleUser: GoogleUser) {
     userId: user.id,
   });
   return user.id;
+}
+
+export async function uploadUserPictureImageService(
+  userId: number,
+  file: File,
+) {
+  const key = `users/${userId}/profile_${uuidv4()}`;
+
+  await uploadFileToBucket(file.stream(), key);
+
+  const thumbHash = await generateThumbnailHash(file);
+  await updateUserPicture(userId, key, thumbHash);
+
+  redirect("/profile");
 }
 
 export async function sendConfirmationEmailService(userId: number) {

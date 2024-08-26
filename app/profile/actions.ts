@@ -4,6 +4,7 @@ import {
   changeUserDataService,
   changeUserPasswordService,
   isOAuthUserAndPasswordEmptyService,
+  uploadUserPictureImageService,
 } from "@/services/users";
 import { userDataFormSchema } from "@/app/profile/validations";
 import { passwordSchema } from "@/app/(auth)/reset-password/validations";
@@ -37,6 +38,14 @@ export const changePasswordAction = authenticatedAction
       await changeUserPasswordService(userId, currentPassword, newPassword);
     },
   );
+
+export const uploadProfileImageAction = authenticatedAction
+  .createServerAction()
+  .input(z.object({ fileWrapper: z.instanceof(FormData) }))
+  .handler(async ({ input, ctx: { user } }) => {
+    const file = input.fileWrapper.get("image") as File;
+    await uploadUserPictureImageService(user.id, file);
+  });
 
 export const userRequireCurrentPasswordToChangeItAction = authenticatedAction
   .createServerAction()
