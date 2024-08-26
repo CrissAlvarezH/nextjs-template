@@ -21,7 +21,7 @@ export function Login({ callbackUrl }: { callbackUrl: string }) {
 
   useEffect(() => {
     void isUserAlreadyLoggedIn();
-  }, []);
+  }, [isUserAlreadyLoggedIn]);
 
   return (
     <>
