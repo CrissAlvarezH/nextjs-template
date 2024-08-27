@@ -27,7 +27,7 @@ export async function encodeImageToBlurhash(src: string) {
 }
 
 export function convertBlurHashToBase64(hash: string) {
-  // decode hash to convert to base64 (nextjs Image placeholder 'blurDataUrl' compatible)
+  // decode hash to convert to base64 (Next.js Image placeholder 'blurDataUrl' compatible)
   const pixels = decodeBlurHash(hash, 32, 32);
   return parsePixelsToBase64(pixels, 32, 32);
 }
