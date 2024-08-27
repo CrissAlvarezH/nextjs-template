@@ -2,11 +2,12 @@
 import { Button, ButtonProps } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
+import { encodeImageToBlurhash } from "@/lib/image-compression";
 
 export interface UploadImgButtonProps extends ButtonProps {
   text: string;
   loading: boolean;
-  onFileUpload?: (fileWrapper: FormData) => void;
+  onFileUpload?: (fileWrapper: FormData, hash: string) => void;
 }
 
 // IMPORTANT!! this component only can be used by others client components, because of onFileUpload callback
@@ -26,9 +27,10 @@ export function UploadImgButton({
 
     if (e.target.files.length > 0) {
       const image = e.target.files[0];
+      const hash = await encodeImageToBlurhash(URL.createObjectURL(image));
       const formData = new FormData();
       formData.append("image", image);
-      if (onFileUpload) onFileUpload(formData);
+      if (onFileUpload) onFileUpload(formData, hash);
 
       e.target.value = null;
     }

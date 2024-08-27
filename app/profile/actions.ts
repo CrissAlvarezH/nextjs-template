@@ -41,10 +41,10 @@ export const changePasswordAction = authenticatedAction
 
 export const uploadProfileImageAction = authenticatedAction
   .createServerAction()
-  .input(z.object({ fileWrapper: z.instanceof(FormData) }))
+  .input(z.object({ fileWrapper: z.instanceof(FormData), hash: z.string() }))
   .handler(async ({ input, ctx: { user } }) => {
     const file = input.fileWrapper.get("image") as File;
-    await uploadUserPictureImageService(user.id, file);
+    await uploadUserPictureImageService(user.id, file, input.hash);
   });
 
 export const userRequireCurrentPasswordToChangeItAction = authenticatedAction

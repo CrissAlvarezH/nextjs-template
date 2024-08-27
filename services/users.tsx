@@ -33,7 +33,6 @@ import { InsertUser } from "@/db/schemas/users";
 import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
 import { v4 as uuidv4 } from "uuid";
 import { uploadFileToBucket } from "@/lib/files";
-import { generateThumbnailHash } from "@/lib/images";
 import { redirect } from "next/navigation";
 
 export async function emailAndPasswordLoginService(
@@ -210,13 +209,12 @@ export async function createGoogleUserService(googleUser: GoogleUser) {
 export async function uploadUserPictureImageService(
   userId: number,
   file: File,
+  hash: string,
 ) {
   const key = `users/${userId}/profile_${uuidv4()}`;
 
   await uploadFileToBucket(file.stream(), key);
-
-  const thumbHash = await generateThumbnailHash(file);
-  await updateUserPicture(userId, key, thumbHash);
+  await updateUserPicture(userId, key, hash);
 
   redirect("/profile");
 }

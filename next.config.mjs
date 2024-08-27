@@ -5,8 +5,6 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: [
       "@node-rs/argon2",
-      "@aws-sdk/client-s3",
-      "@aws-sdk/lib-storage",
       "@aws-sdk/s3-request-presigner",
     ],
   },
@@ -15,6 +13,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "nextjs-template-public.s3.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "nextjs-template-public.s3.us-east-1.amazonaws.com",
         pathname: "/**",
       },
     ],

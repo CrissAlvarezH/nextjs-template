@@ -1,7 +1,5 @@
 "use server";
 import { NextResponse } from "next/server";
-import sharp from "sharp";
-import { rgbaToDataURL } from "thumbhash";
 
 export async function streamImageFromUrl(url: string) {
   const fetchResponse = await fetch(url);
@@ -44,19 +42,4 @@ export async function streamImageFromUrl(url: string) {
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
-}
-
-export async function generateThumbnailHash(file: File) {
-  const buffer = await file.arrayBuffer();
-  const thumbnailBuffer = await sharp(Buffer.from(buffer))
-    .raw()
-    .ensureAlpha()
-    .resize(2)
-    .toBuffer({ resolveWithObject: true });
-
-  return rgbaToDataURL(
-    thumbnailBuffer.info.width,
-    thumbnailBuffer.info.height,
-    thumbnailBuffer.data,
-  );
 }

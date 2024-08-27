@@ -6,6 +6,7 @@ import { useServerAction } from "zsa-react";
 import { uploadProfileImageAction } from "@/app/profile/actions";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/utils";
+import { convertBlurHashToBase64 } from "@/lib/image-compression";
 
 export function ProfileImage({ user }: { user: DatabaseUserAttributes }) {
   const { isPending, error, execute } = useServerAction(
@@ -22,8 +23,10 @@ export function ProfileImage({ user }: { user: DatabaseUserAttributes }) {
       <Image
         src={getImageUrl(user.picture, "/profile-picture-empty.jpg")}
         width={120}
-        placeholder="blur"
-        blurDataURL={user.pictureHash || ""}
+        placeholder={user.pictureHash ? "blur" : "empty"}
+        blurDataURL={
+          user.pictureHash ? convertBlurHashToBase64(user.pictureHash) : ""
+        }
         height={120}
         priority
         className="h-32 w-32 rounded-full border object-cover"
@@ -36,7 +39,9 @@ export function ProfileImage({ user }: { user: DatabaseUserAttributes }) {
         variant="secondary"
         className="rounded-full"
         loading={isPending}
-        onFileUpload={(formData) => execute({ fileWrapper: formData })}
+        onFileUpload={(formData, hash) =>
+          execute({ fileWrapper: formData, hash })
+        }
       />
     </div>
   );
