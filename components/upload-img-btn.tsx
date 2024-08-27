@@ -2,7 +2,7 @@
 import { Button, ButtonProps } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
-import { encodeImageToBlurhash } from "@/lib/image-compression";
+import { encodeImageToBlurhashBase64 } from "@/lib/image-compression";
 
 export interface UploadImgButtonProps extends ButtonProps {
   text: string;
@@ -27,10 +27,12 @@ export function UploadImgButton({
 
     if (e.target.files.length > 0) {
       const image = e.target.files[0];
-      const hash = await encodeImageToBlurhash(URL.createObjectURL(image));
+      const hashBase64 = await encodeImageToBlurhashBase64(
+        URL.createObjectURL(image),
+      );
       const formData = new FormData();
       formData.append("image", image);
-      if (onFileUpload) onFileUpload(formData, hash);
+      if (onFileUpload) onFileUpload(formData, hashBase64);
 
       e.target.value = null;
     }
