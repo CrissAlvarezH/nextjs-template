@@ -13,8 +13,6 @@ export default async function ProfilePage() {
   const [requiresCurrentPassword] =
     await userRequireCurrentPasswordToChangeItAction(user.user.id);
 
-  // TODO why user.user has 'password' in it?!!!!!
-  console.log(user.user);
   return (
     <div>
       <div className="flex justify-center">

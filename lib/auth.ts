@@ -19,9 +19,18 @@ export const lucia = new Lucia(adapter, {
     },
   },
   getUserAttributes: (attr) => {
-    return attr;
+    return {
+      id: attr.id,
+      picture: attr.picture,
+      pictureHash: attr.pictureHash,
+      name: attr.name,
+      email: attr.email,
+      phone: attr.phone,
+    };
   },
 });
+
+export type DatabaseUserAttributes = Omit<SelectUser, "password">;
 
 export interface UserAndSession {
   user: DatabaseUserAttributes | null;
@@ -78,8 +87,6 @@ declare module "lucia" {
     DatabaseUserAttributes: DatabaseUserAttributes;
   }
 }
-
-export type DatabaseUserAttributes = Omit<SelectUser, "password">;
 
 export const googleAuth = new Google(
   env.GOOGLE_CLIENT_ID,
