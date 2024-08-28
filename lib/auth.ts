@@ -30,11 +30,18 @@ export const lucia = new Lucia(adapter, {
   },
 });
 
-export type DatabaseUserAttributes = Omit<SelectUser, "password">;
+export type DatabaseUserAttributes = {
+  id: number;
+  picture: string;
+  pictureHash: string;
+  name: string;
+  email: string;
+  phone: string;
+};
 
 export interface UserAndSession {
   user: DatabaseUserAttributes | null;
-  session?: SelectSession | null;
+  session: SelectSession | null;
 }
 
 export const validateRequest = cache(async (): Promise<UserAndSession> => {
