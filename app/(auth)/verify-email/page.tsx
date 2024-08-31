@@ -15,7 +15,8 @@ export default async function VerifyEmailPage({
       </div>
     );
   }
-  const [_, error] = await checkUserCodeAction({ userId: id, code });
+
+  const [_, error] = await checkUserCodeAction({ userId: Number(id), code });
   if (error) {
     return (
       <div className="flex justify-center py-5">
