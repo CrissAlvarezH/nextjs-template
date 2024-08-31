@@ -14,6 +14,9 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1),
     EMAIL_FROM: z.string().min(1),
     PUBLIC_BUCKET: z.string().min(1),
+    AWS_REGION: z.string().nullable(),
+    AWS_ACCESS_KEY_ID: z.string().nullable(),
+    AWS_SECRET_ACCESS_KEY: z.string().nullable(),
   },
   client: {},
   runtimeEnv: {
@@ -36,6 +39,11 @@ export const env = createEnv({
     // Emails
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+
+    // Aws access keys (these are optional because if it is running on aws then are loaded by session)
+    AWS_REGION: process.env.AWS_REGION,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
 
     // Public files, it will be like /public folder but for production
     PUBLIC_BUCKET: process.env.PUBLIC_BUCKET,
