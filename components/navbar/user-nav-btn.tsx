@@ -28,7 +28,7 @@ export async function UserNavButton() {
                     user.user.picture,
                     "/profile-picture-empty.jpg",
                   )}
-                  placeholder="blur"
+                  placeholder={user.user.pictureHash ? "blur" : "empty"}
                   blurDataURL={user.user.pictureHash || ""}
                   className="h-7 w-7 rounded-full object-cover"
                   alt="User profile picture"

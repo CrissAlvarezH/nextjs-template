@@ -24,7 +24,7 @@ export const env = createEnv({
     DB_USER: process.env.DB_USER,
     DB_PASS: process.env.DB_PASS,
     DB_NAME: process.env.DB_NAME,
-    DB_URL: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:5432/${process.env.DB_NAME}?sslmode=require`,
+    DB_URL: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:5432/${process.env.DB_NAME}`,
 
     // Google api keys
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
