@@ -14,9 +14,9 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1),
     EMAIL_FROM: z.string().min(1),
     PUBLIC_BUCKET: z.string().min(1),
-    AWS_REGION: z.string().nullable(),
-    AWS_ACCESS_KEY_ID: z.string().nullable(),
-    AWS_SECRET_ACCESS_KEY: z.string().nullable(),
+    AWS_REGION: z.string().optional(),
+    AWS_ACCESS_KEY_ID: z.string().optional(),
+    AWS_SECRET_ACCESS_KEY: z.string().optional(),
   },
   client: {},
   runtimeEnv: {
