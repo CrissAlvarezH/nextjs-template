@@ -4,6 +4,10 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     HOST_NAME: z.string().min(1),
+    ENVIRONMENT: z
+      .string()
+      .min(1)
+      .regex(/^(dev|prod)$/),
     DB_HOST: z.string().min(1),
     DB_USER: z.string().min(1),
     DB_PASS: z.string().min(1),
@@ -17,10 +21,18 @@ export const env = createEnv({
     AWS_REGION: z.string().optional(),
     AWS_ACCESS_KEY_ID: z.string().optional(),
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
+    SENTRY_AUTH_TOKEN: z.string().min(1),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_ENVIRONMENT: z
+      .string()
+      .min(1)
+      .regex(/^(dev|prod)$/),
+  },
   runtimeEnv: {
     HOST_NAME: process.env.HOST_NAME,
+    ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
+    NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
 
     // Database
     DB_HOST: process.env.DB_HOST,
@@ -47,5 +59,8 @@ export const env = createEnv({
 
     // Public files, it will be like /public folder but for production
     PUBLIC_BUCKET: process.env.PUBLIC_BUCKET,
+
+    // Errors
+    SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
   },
 });
