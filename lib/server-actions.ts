@@ -7,6 +7,7 @@ import {
 import { ZodError } from "zod";
 import { validateRequest } from "@/lib/auth";
 import { createServerActionProcedure } from "zsa";
+import * as Sentry from "@sentry/nextjs";
 
 export async function shapeErrors({ err: error }: any) {
   if (error instanceof ZodError) return { error: error.message };
@@ -15,7 +16,7 @@ export async function shapeErrors({ err: error }: any) {
     console.log("Internal server error", error.message);
   else console.log("Unknown error on server action", error);
 
-  // TODO send to Sentry
+  Sentry.captureException(error);
 
   return { error: "Ocurrió un inconveniente, intente mas tarde" };
 }
