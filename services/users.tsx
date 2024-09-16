@@ -1,5 +1,4 @@
-"use server";
-
+import "server-only";
 import { GoogleUser } from "@/app/api/login/google/callback/route";
 import { sendEmail } from "@/lib/emails";
 import { VerifyEmail } from "@/emails/verify-email";
