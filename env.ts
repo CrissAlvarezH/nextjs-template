@@ -22,12 +22,14 @@ export const env = createEnv({
     AWS_ACCESS_KEY_ID: z.string().optional(),
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     SENTRY_AUTH_TOKEN: z.string().min(1),
+    SENTRY_DSN: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z
       .string()
       .min(1)
       .regex(/^(dev|prod)$/),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().min(1),
   },
   runtimeEnv: {
     HOST_NAME: process.env.HOST_NAME,
@@ -62,5 +64,7 @@ export const env = createEnv({
 
     // Errors
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+    SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
 });
