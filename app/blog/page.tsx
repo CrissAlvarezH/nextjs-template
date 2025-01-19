@@ -12,6 +12,8 @@ import { ListBlogPostsType } from "@/repositories/blogs";
 
 export default async function BlogPage({ searchParams: { page = "1" } }) {
   const [data, error] = await listPostsAction({ page });
+  
+  // TODO add a better way to manage errors
   if (error) throw new Error(error.error) // to make the error.tsx take it
 
   const user = await validateRequest()
