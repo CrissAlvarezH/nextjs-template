@@ -1,7 +1,7 @@
 import {withSentryConfig} from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  // output: "standalone", // uncomment when use docker image
   reactStrictMode: true,
   experimental: {
     serverComponentsExternalPackages: [

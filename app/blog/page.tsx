@@ -34,7 +34,7 @@ export default async function BlogPage({ searchParams: { page = "1" } }) {
 
         {data.posts.length == 0 && (
           <div>
-            <h1>There ins't any post yet</h1>
+            <h1>There ins&apos;t any post yet</h1>
           </div>
         )}
 

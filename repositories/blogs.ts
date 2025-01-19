@@ -1,6 +1,6 @@
 import "server-only";
 import { db, Transaction } from "@/db"; // Adjust the import path as necessary
-import { blogPostComment, blogPosts, SelectBlogPost, SelectBlogPostComment, SelectBlogPostCommentType } from "@/db/schemas/blog";
+import { blogPostComment, blogPosts, SelectBlogPost, SelectBlogPostCommentType } from "@/db/schemas/blog";
 import { count, eq } from "drizzle-orm";
 import { DatabaseError } from "@/lib/errors";
 import { users } from "@/db/schemas/users"
