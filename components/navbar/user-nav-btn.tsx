@@ -19,23 +19,21 @@ export async function UserNavButton() {
       {user.user ? (
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <div className="flex items-center gap-2">
-                <Image
-                  width={100}
-                  height={100}
-                  src={getImageUrl(
-                    user.user.picture,
-                    "/profile-picture-empty.jpg",
-                  )}
-                  placeholder={user.user.pictureHash ? "blur" : "empty"}
-                  blurDataURL={user.user.pictureHash || ""}
-                  className="h-7 w-7 rounded-full object-cover"
-                  alt="User profile picture"
-                />
-                {user.user?.name.split(" ")[0]}
-              </div>
-            </Button>
+            <div className="flex items-center gap-2 cursor-pointer">
+              <Image
+                width={100}
+                height={100}
+                src={getImageUrl(
+                  user.user.picture,
+                  "/profile-picture-empty.jpg",
+                )}
+                placeholder={user.user.pictureHash ? "blur" : "empty"}
+                blurDataURL={user.user.pictureHash || ""}
+                className="h-7 w-7 rounded-full object-cover"
+                alt="User profile picture"
+              />
+              <p className="text-sm">{user.user?.name.split(" ")[0]}</p>
+            </div>
           </PopoverTrigger>
           <PopoverContent>
             <div className="flex flex-col gap-2">

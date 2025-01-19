@@ -2,34 +2,45 @@ import { googleAuth } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { generateCodeVerifier, generateState } from "arctic";
 
+
 export async function GET(request: Request): Promise<Response> {
   const callbackUrl = new URL(request.url).searchParams.get("callbackUrl");
+
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
-  const url = await googleAuth.createAuthorizationURL(state, codeVerifier, {
+  const authUrl = await googleAuth.createAuthorizationURL(state, codeVerifier, {
     scopes: ["profile", "email"],
   });
 
-  (await cookies()).set("google_oauth_state", state, {
-    secure: true,
+  const cks = await cookies();
+
+  cks.set("google_oauth_state", state, {
     path: "/",
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 10,
+    sameSite: "lax",
   });
 
-  (await cookies()).set("google_code_verifier", codeVerifier, {
-    secure: true,
+  cks.set("google_code_verifier", codeVerifier, {
     path: "/",
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 10,
+    sameSite: "lax",
   });
 
-  (await cookies()).set("callback_url", callbackUrl || "/", {
-    secure: true,
+  cks.set("callback_url", callbackUrl || "/", {
     path: "/",
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 10,
+    sameSite: "lax",
   });
 
-  return Response.redirect(url);
+  // Redirect to the Google auth URL
+  return new Response(null, {
+    status: 302,
+    headers: { Location: authUrl.toString() },
+  });
 }

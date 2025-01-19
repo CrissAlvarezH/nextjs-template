@@ -5,7 +5,6 @@ import { logoutAction } from "@/app/(auth)/login/actions";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,26 +18,22 @@ export function LogoutButton() {
     <div>
       <Dialog>
         <DialogTrigger>
-          <button
-            type="submit"
-            className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 hover:text-black"
-          >
+          <p className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 hover:text-black" >
             Cerrar sesión
-          </button>
+          </p>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>¿Seguro que quieres cerrar sesión?</DialogTitle>
-            <DialogDescription>
-              <div className="flex justify-end pt-7">
-                <Button disabled={isPending} onClick={() => logout()}>
-                  {isPending && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Cerrar sesión
-                </Button>
-              </div>
-            </DialogDescription>
+
+            <div className="flex justify-end pt-7">
+              <Button disabled={isPending} onClick={() => logout()}>
+                {isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Cerrar sesión
+              </Button>
+            </div>
           </DialogHeader>
         </DialogContent>
       </Dialog>
