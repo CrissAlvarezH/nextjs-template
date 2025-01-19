@@ -1,7 +1,7 @@
 import "server-only";
 import { db, Transaction } from "@/db"; // Adjust the import path as necessary
 import { blogPostComment, blogPosts, SelectBlogPost, SelectBlogPostCommentType } from "@/db/schemas/blog";
-import { count, eq } from "drizzle-orm";
+import { count, eq, desc } from "drizzle-orm";
 import { DatabaseError } from "@/lib/errors";
 import { users } from "@/db/schemas/users"
 
@@ -109,6 +109,7 @@ export async function listPostComments(postId: number): Promise<ListPostCommentT
     .from(blogPostComment)
     .innerJoin(users, eq(users.id, blogPostComment.author))
     .where(eq(blogPostComment.post, postId))
+    .orderBy(desc(blogPostComment.date))
 }
 
 export async function insertPostComment(content: string, postId: number, authorId: number, date: Date) {

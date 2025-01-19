@@ -1,6 +1,7 @@
 import { listPostCommentsAction } from "./actions"
 import Image from "next/image"
 import { getImageUrl } from "@/lib/utils"
+import { formatDateToLocaleString } from "@/lib/dates"
 
 
 export async function BlogPostComments({ postId }: { postId: number }) {
@@ -22,7 +23,7 @@ export async function BlogPostComments({ postId }: { postId: number }) {
               src={getImageUrl(c.author.picture, "")} />
             <div>
               <p className="font-bold">{c.author.name}</p>
-              <p className="text-sm text-gray-500">{new Date(c.comment.date).toLocaleDateString("en-CA")}</p>
+              <p className="text-sm text-gray-500">{formatDateToLocaleString(new Date(c.comment.date))}</p>
             </div>
           </div>
           <p className="py-2 px-2">{c.comment.content}</p>

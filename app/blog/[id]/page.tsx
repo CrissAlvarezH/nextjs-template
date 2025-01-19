@@ -19,7 +19,6 @@ export default async function BlogPostPage({ params: { id } }: BlogPostPageProps
   return (
     <div className="flex justify-center pb-32">
       <div className="w-[900px]">
-
         {/* Post header */}
         <div className="py-8 px-7 bg-gray-100/80">
           <div className="flex flex-col md:flex-row justify-between">
