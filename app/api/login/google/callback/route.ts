@@ -8,9 +8,9 @@ export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const storedState = cookies().get("google_oauth_state")?.value ?? null;
-  const codeVerifier = cookies().get("google_code_verifier")?.value ?? null;
-  const afterLoginUrl = cookies().get("callback_url")?.value || "/";
+  const storedState = (await cookies()).get("google_oauth_state")?.value ?? null;
+  const codeVerifier = (await cookies()).get("google_code_verifier")?.value ?? null;
+  const afterLoginUrl = (await cookies()).get("callback_url")?.value || "/";
 
   if (
     !code ||

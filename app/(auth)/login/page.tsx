@@ -1,11 +1,17 @@
 import { Login } from "@/app/(auth)/login/login";
 import { env } from "@/env";
 
-export default async function LoginPage({
-  searchParams: { callbackUrl = "/" },
-}: {
-  searchParams: { callbackUrl: string };
-}) {
+export default async function LoginPage(
+  props: {
+    searchParams: Promise<{ callbackUrl: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+
+  const {
+    callbackUrl = "/"
+  } = searchParams;
+
   console.log("env", env.ENVIRONMENT);
   return (
     <div>

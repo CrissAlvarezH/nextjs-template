@@ -1,13 +1,20 @@
 import { checkUserCodeAction } from "@/app/(auth)/verify-email/actions";
 
-export default async function VerifyEmailPage({
-  searchParams: { id, code },
-}: {
-  searchParams: {
-    id: number;
-    code: string;
-  };
-}) {
+export default async function VerifyEmailPage(
+  props: {
+    searchParams: Promise<{
+      id: number;
+      code: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+
+  const {
+    id,
+    code
+  } = searchParams;
+
   if (!id || !code) {
     return (
       <div className="flex justify-center py-5">

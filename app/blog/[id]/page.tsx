@@ -6,12 +6,18 @@ import { AddCommentForm } from "./add-comment-form";
 
 
 type BlogPostPageProps = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export default async function BlogPostPage({ params: { id } }: BlogPostPageProps) {
+export default async function BlogPostPage(props: BlogPostPageProps) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const [post, error] = await retrieveBlogPostAction(id)
   if (error) throw new Error(error.error)
   if (!post) notFound()

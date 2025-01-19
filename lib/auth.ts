@@ -45,7 +45,7 @@ export interface UserAndSession {
 }
 
 export const validateRequest = cache(async (): Promise<UserAndSession> => {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+  const sessionId = (await cookies()).get(lucia.sessionCookieName)?.value ?? null;
   if (!sessionId) {
     return {
       user: null,
@@ -58,7 +58,7 @@ export const validateRequest = cache(async (): Promise<UserAndSession> => {
   try {
     if (result.session && result.session.fresh) {
       const sessionCookie = lucia.createSessionCookie(result.session.id);
-      cookies().set(
+      (await cookies()).set(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes,
@@ -66,7 +66,7 @@ export const validateRequest = cache(async (): Promise<UserAndSession> => {
     }
     if (!result.session) {
       const sessionCookie = lucia.createBlankSessionCookie();
-      cookies().set(
+      (await cookies()).set(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes,
@@ -79,7 +79,7 @@ export const validateRequest = cache(async (): Promise<UserAndSession> => {
 export async function setSession(userId: number) {
   const session = await lucia.createSession(userId, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(
+  (await cookies()).set(
     sessionCookie.name,
     sessionCookie.value,
     sessionCookie.attributes,

@@ -3,14 +3,21 @@ import { validateEmailVerificationCodeAction } from "@/app/(auth)/reset-password
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default async function ResetPasswordPage({
-  searchParams: { id, code },
-}: {
-  searchParams: {
-    id: number;
-    code: string;
-  };
-}) {
+export default async function ResetPasswordPage(
+  props: {
+    searchParams: Promise<{
+      id: number;
+      code: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+
+  const {
+    id,
+    code
+  } = searchParams;
+
   if (!id || !code) {
     return (
       <div className="flex justify-center py-5">

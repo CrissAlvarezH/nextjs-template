@@ -10,9 +10,15 @@ import { validateRequest } from "@/lib/auth";
 import { ListBlogPostsType } from "@/repositories/blogs";
 
 
-export default async function BlogPage({ searchParams: { page = "1" } }) {
+export default async function BlogPage(props) {
+  const searchParams = await props.searchParams;
+
+  const {
+    page = "1"
+  } = searchParams;
+
   const [data, error] = await listPostsAction({ page });
-  
+
   // TODO add a better way to manage errors
   if (error) throw new Error(error.error) // to make the error.tsx take it
 

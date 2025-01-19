@@ -1,13 +1,20 @@
-"use client";
+"use client";;
+import { use } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Login } from "@/app/(auth)/login/login";
 
-export default function LoginModalPage({
-  searchParams: { callbackUrl = "/" },
-}: {
-  searchParams: { callbackUrl: string };
-}) {
+export default function LoginModalPage(
+  props: {
+    searchParams: Promise<{ callbackUrl: string }>;
+  }
+) {
+  const searchParams = use(props.searchParams);
+
+  const {
+    callbackUrl = "/"
+  } = searchParams;
+
   const pathname = usePathname();
   const router = useRouter();
 
