@@ -12,10 +12,10 @@ export default function Error({ error, reset }: { error: Error & { digest: strin
 
   // TODO set a better style to this
   return (
-    <div>
-      <h1>Something went wrong</h1>
-      <p>{error.message}</p>
-      <Button onClick={reset}>Retry</Button>
+    <div className="flex flex-col gap-4 items-center justify-center py-5">
+      <h1 className="font-bold">Something went wrong</h1>
+      <p className="font-light">{error.message}</p>
+      <Button variant="secondary" onClick={reset}>Retry</Button>
     </div>
   )
 }

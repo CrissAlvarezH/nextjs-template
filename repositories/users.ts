@@ -1,3 +1,4 @@
+import "server-only";
 import { db } from "@/db";
 import { eq, and } from "drizzle-orm";
 import { accounts, confirmationEmailCode, users } from "@/db/schemas";

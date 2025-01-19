@@ -13,6 +13,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "randomuser.me",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "nextjs-template-public.s3.amazonaws.com",
         pathname: "/**",
       },

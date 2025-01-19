@@ -9,7 +9,8 @@ import { getImageUrl } from "@/lib/utils";
 import { validateRequest } from "@/lib/auth";
 import { ListBlogPostsType } from "@/repositories/blogs";
 
-export default async function BlogPage({ params: { page = 1 } }) {
+
+export default async function BlogPage({ searchParams: { page = "1" } }) {
   const [data, error] = await listPostsAction({ page });
   if (error) throw new Error(error.error) // to make the error.tsx take it
 
@@ -17,9 +18,10 @@ export default async function BlogPage({ params: { page = 1 } }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="container mx-auto flex-grow px-4 py-8">
-        <div className="flex justify-between">
-          <h2 className="mb-6 text-xl font-semibold">Latest Posts</h2>
+      <main className="container mx-auto flex-grow px-4 pb-5">
+
+        <div className="py-3 flex justify-between">
+          <h2 className="text-xl font-semibold">Latest Posts</h2>
 
           {user.user && (
             <Link href="/blog/create">
@@ -84,6 +86,5 @@ function PostCard({ post }: { post: ListBlogPostsType }) {
         </Button>
       </div>
     </Card>
-
   )
 }

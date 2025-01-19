@@ -25,11 +25,19 @@ export class UnauthenticatedUserError extends PublicError {
 }
 
 export class InvalidLinkError extends PublicError {
-  message = "Enalce invalido";
+  message = "Enlace invalido";
 }
 
 export class EmailTakenError extends PublicError {
   message = "El email ya esta siendo usado";
+}
+
+export class InvalidIdentifierError extends PublicError {
+  message = "El id es invalido"
+}
+
+export class InvalidParamTypeError extends PublicError {
+  message = "Tipo del parametro es invalido"
 }
 
 export class InternalServerError extends Error {}

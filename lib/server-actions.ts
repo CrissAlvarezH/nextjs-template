@@ -6,11 +6,12 @@ import {
 } from "@/lib/errors";
 import { ZodError } from "zod";
 import { validateRequest } from "@/lib/auth";
-import { createServerActionProcedure } from "zsa";
+import { createServerActionProcedure, ZSAError } from "zsa";
 import * as Sentry from "@sentry/nextjs";
 
 export async function shapeErrors({ err: error }: any) {
   if (error instanceof ZodError) return { error: error.message };
+  if (error instanceof ZSAError) return { error: error.message };
   if (error instanceof PublicError) return { error: error.message };
   if (error instanceof InternalServerError)
     console.log("Internal server error", error.message);
