@@ -4,6 +4,7 @@ import { blogPostComment, blogPosts, SelectBlogPost, SelectBlogPostCommentType }
 import { count, eq, desc } from "drizzle-orm";
 import { DatabaseError } from "@/lib/errors";
 import { users } from "@/db/schemas/users"
+import { unstable_cache } from "next/cache";
 
 
 export type ListBlogPostsType = Omit<SelectBlogPost, "author" | "content"> & {
@@ -50,10 +51,11 @@ export type RetrieveBlogPostType = Omit<SelectBlogPost, "author"> & {
   author: {id: number, name: string}
 }
 
-export async function retrieveBlogPost(id: number): Promise<RetrieveBlogPostType | undefined> {
-  const posts = await db
-    .select({
-      blog: blogPosts,
+export const retrieveBlogPost = unstable_cache(
+  async (id: number): Promise<RetrieveBlogPostType | undefined> => {
+    const posts = await db
+      .select({
+        blog: blogPosts,
       author: {
         id: users.id, name: users.name
       }
@@ -64,7 +66,7 @@ export async function retrieveBlogPost(id: number): Promise<RetrieveBlogPostType
 
   if (posts.length > 0) return { ...posts[0].blog, author: posts[0].author }
   else return undefined
-}
+}, ["retrieve-blog-post"], { revalidate: 7 * 24 * 60 * 60 }) // revalidate every 7 days
 
 export type InsertBlogPostType = {
   title: string
