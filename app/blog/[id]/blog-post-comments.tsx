@@ -19,7 +19,7 @@ export async function BlogPostComments({ postId }: { postId: number }) {
           <div className="flex gap-3">
             <Image
               width={100} height={100} alt="picture image"
-              className="w-11 h-11 rounded-full"
+              className="w-11 h-11 rounded-full object-cover"
               src={getImageUrl(c.author.picture, "")} />
             <div>
               <p className="font-bold">{c.author.name}</p>

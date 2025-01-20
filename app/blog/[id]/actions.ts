@@ -7,7 +7,7 @@ import { InvalidIdentifierError } from "@/lib/errors"
 import { revalidatePath } from "next/cache"
 
 
-export const retrieveBlogPostAction = authenticatedAction
+export const retrieveBlogPostAction = unauthenticatedAction
   .createServerAction()
   .input(z.string())
   .output(z.custom<RetrieveBlogPostType | undefined>())

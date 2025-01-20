@@ -18,9 +18,8 @@ export default async function BlogPage(props: { searchParams: Promise<{ page: st
   } = searchParams;
 
   const [data, error] = await listPostsAction({ page });
-
-  // TODO add a better way to manage errors
-  if (error) throw new Error(error.error) // to make the error.tsx take it
+  
+  if (error) return <p>Error: {error.error}</p>
 
   const user = await validateRequest()
 
