@@ -3,6 +3,11 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig = {
   // output: "standalone", // uncomment when use docker image
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "3mb",
+    },
+  },
   serverExternalPackages: [
     "@node-rs/argon2",
     "@aws-sdk/s3-request-presigner",
