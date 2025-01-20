@@ -5,26 +5,37 @@ import { createGoogleUserService } from "@/services/users";
 import { getAccountByGoogleId } from "@/repositories/users";
 
 export async function GET(request: Request): Promise<Response> {
-  const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
-  const storedState = (await cookies()).get("google_oauth_state")?.value ?? null;
-  const codeVerifier = (await cookies()).get("google_code_verifier")?.value ?? null;
-  const afterLoginUrl = (await cookies()).get("callback_url")?.value || "/";
-
-  if (
-    !code ||
-    !state ||
-    !storedState ||
-    state !== storedState ||
-    !codeVerifier
-  ) {
-    return new Response(null, {
-      status: 400,
-    });
-  }
-
   try {
+    const url = new URL(request.url);
+    const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
+    const cookieStore = await cookies();
+    const storedState = cookieStore.get("google_oauth_state")?.value ?? null;
+    const codeVerifier = cookieStore.get("google_code_verifier")?.value ?? null;
+    const afterLoginUrl = cookieStore.get("callback_url")?.value || "/";
+
+    if (!googleAuth) {
+      console.error("Google auth configuration is not properly initialized");
+      return new Response(null, { status: 500 });
+    }
+
+    if (
+      !code ||
+      !state ||
+      !storedState ||
+      state !== storedState ||
+      !codeVerifier
+    ) {
+      console.error("Invalid OAuth state or missing parameters", {
+        hasCode: !!code,
+        hasState: !!state,
+        hasStoredState: !!storedState,
+        stateMatch: state === storedState,
+        hasCodeVerifier: !!codeVerifier,
+      });
+      return new Response(null, { status: 400 });
+    }
+
     const tokens = await googleAuth.validateAuthorizationCode(
       code,
       codeVerifier,
@@ -60,17 +71,16 @@ export async function GET(request: Request): Promise<Response> {
       },
     });
   } catch (e) {
-    console.log("Error on google callback router", e);
-    // the specific error message depends on the provider
-    if (e instanceof OAuth2RequestError) {
-      // invalid code
-      return new Response(null, {
-        status: 400,
-      });
-    }
-    return new Response(null, {
-      status: 500,
+    console.error("Error on google callback router", {
+      error: e,
+      message: e instanceof Error ? e.message : "Unknown error",
+      stack: e instanceof Error ? e.stack : undefined,
     });
+    
+    if (e instanceof OAuth2RequestError) {
+      return new Response(null, { status: 400 });
+    }
+    return new Response(null, { status: 500 });
   }
 }
 
