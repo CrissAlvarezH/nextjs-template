@@ -10,7 +10,7 @@ import { validateRequest } from "@/lib/auth";
 import { ListBlogPostsType } from "@/repositories/blogs";
 
 
-export default async function BlogPage(props) {
+export default async function BlogPage(props: { searchParams: Promise<{ page: string }> }) {
   const searchParams = await props.searchParams;
 
   const {
