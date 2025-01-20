@@ -56,8 +56,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.14",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
     "@types/uuid": "^10.0.0",
     "drizzle-kit": "^0.24.2",
     "eslint": "^8.57.1",
