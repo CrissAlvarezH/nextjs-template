@@ -24,7 +24,7 @@ export default async function BlogPage(props: { searchParams: Promise<{ page: st
   const user = await validateRequest()
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex flex-col">
       <main className="container mx-auto flex-grow px-4 pb-5">
 
         <div className="py-3 flex justify-between">

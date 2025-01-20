@@ -28,12 +28,12 @@ export function Login({ callbackUrl }: { callbackUrl: string }) {
       <p className="pb-4 text-center text-lg font-bold">Ingresa a tu cuenta</p>
 
       <div className="pb-5">
-        <Link
+        <a
           href={`/api/login/google?callbackUrl=${callbackUrl}`}
           className="flex items-center"
         >
           <GoogleLoginButton />
-        </Link>
+        </a>
       </div>
 
       <div className="flex items-center py-2">
