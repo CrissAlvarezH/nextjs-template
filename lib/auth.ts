@@ -3,11 +3,13 @@ import { Lucia } from "lucia";
 import { db } from "@/db";
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { users, sessions } from "@/db/schemas";
-import { SelectSession, SelectUser } from "@/db/schemas/users";
+import { SelectSession } from "@/db/schemas/users";
 import { cache } from "react";
 import { Google } from "arctic";
 import { env } from "@/env";
 import { cookies } from "next/headers";
+import bcrypt from "bcryptjs";
+
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
@@ -100,3 +102,11 @@ export const googleAuth = new Google(
   env.GOOGLE_CLIENT_ID_SECRET,
   `${env.HOST_NAME}/api/login/google/callback`,
 );
+
+export async function hashPassword(password: string) {
+  return await bcrypt.hash(password, 10);
+}
+
+export async function verifyUserPassword(hashed: string, password: string) {
+  return await bcrypt.compare(password, hashed);
+}

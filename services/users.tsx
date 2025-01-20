@@ -3,7 +3,6 @@ import { GoogleUser } from "@/app/api/login/google/callback/route";
 import { sendEmail } from "@/lib/emails";
 import { VerifyEmail } from "@/emails/verify-email";
 import { ResetPassword } from "@/emails/reset-password";
-import { hash, verify } from "@node-rs/argon2";
 import {
   EmailNotValidatedError,
   EmailTakenError,
@@ -26,7 +25,7 @@ import {
   updateUserPicture,
   validateUserEmail,
 } from "@/repositories/users";
-import { lucia, setSession } from "@/lib/auth";
+import { hashPassword, lucia, setSession, verifyUserPassword } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { InsertUser } from "@/db/schemas/users";
 import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
@@ -78,15 +77,6 @@ export async function logoutService(userId: number) {
   );
 }
 
-export async function hashPassword(password: string) {
-  return await hash(password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
-}
-
 export async function confirmationEmailCodeExistsService(
   userId: number,
   code: string,
@@ -95,14 +85,6 @@ export async function confirmationEmailCodeExistsService(
   const confirmationCode = getEmailConfirmationCode(userId, code);
   if (deleteAfter) await deleteEmailConfirmationCode(userId, code);
   return !!confirmationCode;
-}
-export async function verifyUserPassword(hashed: string, password: string) {
-  return await verify(hashed, password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
 }
 
 export async function resetUserPasswordService(

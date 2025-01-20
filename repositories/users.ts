@@ -4,7 +4,8 @@ import { eq, and } from "drizzle-orm";
 import { accounts, confirmationEmailCode, users } from "@/db/schemas";
 import { InsertAccount, InsertUser } from "@/db/schemas/users";
 import { DatabaseError, UserDoesNotExistsError } from "@/lib/errors";
-import { hashPassword } from "@/services/users";
+import { hashPassword } from "@/lib/auth";
+
 
 export async function getUserById(id: number) {
   return db.query.users.findFirst({ where: eq(users.id, id) });
