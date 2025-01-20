@@ -13,7 +13,7 @@ type BlogPostPageProps = {
 
 export default async function BlogPostPage({ params: { id } }: BlogPostPageProps) {
   const [post, error] = await retrieveBlogPostAction(id)
-  if (error) throw new Error(error.error)
+  if (error) return <p>Error: {error.error}</p>
   if (!post) notFound()
 
   return (

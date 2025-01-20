@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useServerAction } from "zsa-react";
 import { createPostCommentAction } from "./actions";
 import { useToast } from "@/hooks/use-toast";
+import { PublicError, UnauthenticatedUserError } from "@/lib/errors";
 
 
 export function AddCommentForm({ postId }: { postId: number }) {
@@ -16,8 +17,12 @@ export function AddCommentForm({ postId }: { postId: number }) {
 
   const onSubmit = async () => {
     const [res, error] = await execute({ content: comment, postId })
-    if (error)
-      return toast({ title: "Error: " + error.error, variant: "destructive" })
+    if (error) {
+      if (error.error == new UnauthenticatedUserError().message)
+        return toast({ title: "You must be logged first", variant: "destructive" })
+      else
+        return toast({ title: error.error, variant: "destructive" })
+    }
 
     setComment("") // reset
   }
