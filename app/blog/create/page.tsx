@@ -105,7 +105,7 @@ export default function NewBlogPostPage() {
           <Input
             id="image"
             type="file"
-            accept="image/*"
+            accept=".jpg, .jpeg, .png, .gif, .webp"
             onChange={handleImageChange}
             className="hidden"
             ref={fileInputRef}

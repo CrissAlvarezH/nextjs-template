@@ -72,6 +72,9 @@ function PostCard({ post }: { post: ListBlogPostsType }) {
         fill
         style={{ objectFit: "cover" }}
         className="transition-transform duration-300 ease-in-out group-hover:scale-110"
+        width={100}
+        height={100}
+        quality={60}
       />
       <div className="absolute inset-0 flex flex-col justify-end bg-black bg-opacity-60 p-6 opacity-100 transition-opacity duration-300 group-hover:opacity-90">
         <h3 className="mb-2 line-clamp-2 text-xl font-semibold text-white">
