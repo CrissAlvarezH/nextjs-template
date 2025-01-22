@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 
 
-export function Markdown({content}: {content: string}) {
+export function Markdown({ content }: { content: string }) {
   return (
     <ReactMarkdown
       components={{

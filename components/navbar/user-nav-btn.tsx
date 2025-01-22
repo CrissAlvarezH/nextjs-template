@@ -19,7 +19,7 @@ export async function UserNavButton() {
       {user.user ? (
         <Popover>
           <PopoverTrigger asChild>
-            <div className="flex items-center gap-2 cursor-pointer">
+            <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-100/80 rounded-md px-2">
               <Image
                 width={100}
                 height={100}

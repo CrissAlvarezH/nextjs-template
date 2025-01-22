@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default async function Navbar() {
   return (
     <div className="flex justify-center shadow">
-      <div className="flex w-full max-w-5xl items-center justify-between py-1">
+      <div className="flex w-full max-w-5xl items-center justify-between py-1 px-2">
         <div className="flex">
           <Link href="/">
             <Button variant="link">Home</Button>
@@ -17,12 +17,10 @@ export default async function Navbar() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Suspense fallback={<Skeleton className="h-5 w-20" />}>
-            <UserNavButton />
-          </Suspense>
-        </div>
+        <Suspense fallback={<Skeleton className="h-5 w-20" />}>
+          <UserNavButton />
+        </Suspense>
       </div>
-    </div>
+    </div >
   );
 }

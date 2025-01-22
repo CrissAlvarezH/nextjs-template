@@ -41,16 +41,18 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-5 border">
           <Markdown content={post.content} />
         </div>
 
-        <p className="text-2xl font-bold pt-10 pb-3">Comments</p>
-        <AddCommentForm postId={post.id}/>
+        <div className="px-5">
+          <p className="text-2xl font-bold pt-10 pb-3">Comments</p>
+          <AddCommentForm postId={post.id} />
 
-        <div className="mt-10 border-b border-gray-200" />
+          <div className="mt-10 border-b border-gray-200" />
 
-        <BlogPostComments postId={post.id} />
+          <BlogPostComments postId={post.id} />
+        </div>
       </div>
     </div>
   )
