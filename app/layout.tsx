@@ -28,15 +28,18 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "font-sans antialiased",
           fontSans.variable,
         )}
       >
         <NextTopLoader />
-        {modal}
-        <Navbar />
-        {children}
         <Toaster />
+
+        <Navbar />
+        {modal}
+
+        {/* TODO fix problem with navbar height */}
+        {children}
       </body>
     </html>
   );
