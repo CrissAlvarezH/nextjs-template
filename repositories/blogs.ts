@@ -90,6 +90,26 @@ export async function updateBlogPostBannerPath(id: number, newPath: string, tx?:
   await tx.update(blogPosts).set({ banner: newPath }).where(eq(blogPosts.id, id))
 }
 
+export type UpdateBlogPostType = {
+  title: string
+  description: string,
+  content: string,
+}
+
+export async function updateBlogPost(
+  id: number,
+  data: UpdateBlogPostType,
+  tx?: Transaction,
+) {
+  tx = tx || db
+  const res = await tx.update(blogPosts)
+    .set(data)
+    .where(eq(blogPosts.id, id))
+    .returning();
+  if (res.length === 0) throw new DatabaseError("Error updating blog post");
+  return res[0]
+}
+
 export async function deleteBlogPost(id: number) {
   await db.delete(blogPosts).where(eq(blogPosts.id, id))
 }

@@ -3,7 +3,9 @@ import "server-only";
 import {
   listBlogPosts, insertBlogPost, updateBlogPostBannerPath, InsertBlogPostType, retrieveBlogPost,
   listPostComments,
-  insertPostComment
+  insertPostComment,
+  updateBlogPost,
+  UpdateBlogPostType
 } from "@/repositories/blogs"
 import { uploadFileToBucket } from "@/lib/files";
 import { db } from "@/db";
@@ -20,6 +22,18 @@ export async function createBlogPostService(data: InsertBlogPostType, image: Fil
     const path = "posts/post_" + post.id
     await uploadFileToBucket(image.stream(), path)
     await updateBlogPostBannerPath(post.id, path, tx)
+  })
+}
+
+export async function updateBlogPostService(id: number, data: UpdateBlogPostType, image?: File) {
+  await db.transaction(async (tx) => {
+    const post = await updateBlogPost(id, data, tx)
+
+    if (image) {
+      const path = "posts/post_" + post.id
+      await uploadFileToBucket(image.stream(), path)
+      await updateBlogPostBannerPath(post.id, path, tx)
+    }
   })
 }
 
