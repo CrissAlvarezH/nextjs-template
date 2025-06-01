@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "test": "jest"
   },
   "prettier": {
     "plugins": [
@@ -55,7 +56,11 @@
     "zsa-react": "^0.2.3"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.17.14",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
@@ -63,10 +68,14 @@
     "drizzle-kit": "^0.24.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.1.5",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.0.0-beta.3",
     "postcss": "^8.5.1",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.10",
     "tailwindcss": "^3.4.17",
+    "ts-jest": "^29.3.4",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
   "overrides": {
