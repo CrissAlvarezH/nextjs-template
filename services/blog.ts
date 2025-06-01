@@ -7,7 +7,7 @@ import {
   updateBlogPost,
   UpdateBlogPostType
 } from "@/repositories/blogs"
-import { uploadFileToBucket } from "@/lib/files";
+import { uploadFileToBucket, deleteFileFromBucket } from "@/lib/files";
 import { db } from "@/db";
 
 
@@ -30,8 +30,17 @@ export async function updateBlogPostService(id: number, data: UpdateBlogPostType
     const post = await updateBlogPost(id, data, tx)
 
     if (image) {
-      const path = "posts/post_" + post.id
+      // Get the current post to find the old banner path
+      const currentPost = await retrieveBlogPost(id)
+
+      // Add timestamp to make the key unique and avoid caching issues
+      const timestamp = Date.now()
+      const path = `posts/post_${post.id}_${timestamp}`
       await uploadFileToBucket(image.stream(), path)
+      // Delete the old image after uploading the new one
+      if (currentPost?.banner) {
+        await deleteFileFromBucket(currentPost.banner)
+      }
       await updateBlogPostBannerPath(post.id, path, tx)
     }
   })

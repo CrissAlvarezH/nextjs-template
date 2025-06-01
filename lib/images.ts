@@ -39,7 +39,7 @@ export async function streamImageFromUrl(url: string) {
     headers: {
       "Content-Type": contentType,
       "Content-Length": String(contentLength),
-      "Cache-Control": "public, max-age=31536000, immutable",
+      "Cache-Control": "public, max-age=3600",
     },
   });
 }

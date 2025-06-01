@@ -1,5 +1,5 @@
 import "server-only";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { env } from "@/env";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -55,4 +55,19 @@ export async function getFileUrl(key: string) {
     }),
     { expiresIn: 3600 },
   );
+}
+
+export async function deleteFileFromBucket(filename: string) {
+  const Key = filename;
+  const Bucket = env.PUBLIC_BUCKET;
+
+  try {
+    await s3Client.send(new DeleteObjectCommand({
+      Bucket,
+      Key,
+    }));
+  } catch (e) {
+    // Log the error but don't throw - we don't want to fail the update if delete fails
+    console.error(`Failed to delete file ${filename} from S3:`, e);
+  }
 }
