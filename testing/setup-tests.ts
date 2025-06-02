@@ -35,11 +35,6 @@ jest.mock('@/lib/auth', () => ({
 Object.assign(process.env, {
   NODE_ENV: 'test',
   NEXT_PUBLIC_ENVIRONMENT: 'dev',
-  // Set database connection values for tests to match .env configuration
-  DB_HOST: 'localhost',
-  DB_USER: 'postgres',
-  DB_PASS: 'postgres',
-  DB_PORT: '5439',
 });
 
 // Ensure the TEST_DB_URL is defined (by globalSetup)

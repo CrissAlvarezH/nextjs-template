@@ -10,6 +10,8 @@ const createJestConfig = nextJest({
 const config: Config = {
   coverageProvider: 'v8',
   testEnvironment: 'node',
+  // Load environment variables before any tests run
+  setupFiles: ['<rootDir>/testing/load-env.ts'],
   // Add more setup options before each test is run
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
