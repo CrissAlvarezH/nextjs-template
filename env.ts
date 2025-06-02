@@ -11,6 +11,7 @@ export const env = createEnv({
     DB_HOST: z.string().min(1),
     DB_USER: z.string().min(1),
     DB_PASS: z.string().min(1),
+    DB_PORT: z.string().min(1),
     DB_NAME: z.string().min(1),
     DB_URL: z.string().min(1),
     GOOGLE_CLIENT_ID: z.string().min(1),
@@ -40,11 +41,12 @@ export const env = createEnv({
     DB_HOST: process.env.DB_HOST,
     DB_USER: process.env.DB_USER,
     DB_PASS: process.env.DB_PASS,
+    DB_PORT: process.env.DB_PORT,
     DB_NAME: process.env.DB_NAME,
-    DB_URL: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:5432/${process.env.DB_NAME}`,
+    DB_URL: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
 
     // on vercel sslmode is needed
-    // DB_URL: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:5432/${process.env.DB_NAME}?sslmode=require`,
+    // DB_URL: `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?sslmode=require`,
 
     // Google api keys
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

@@ -9,15 +9,17 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const config: Config = {
   coverageProvider: 'v8',
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^@/env$': '<rootDir>/__mocks__/env.ts',
   },
+  globalSetup: '<rootDir>/testing/global-setup.ts',
+  globalTeardown: '<rootDir>/testing/global-teardown.ts',
+  setupFilesAfterEnv: ['<rootDir>/testing/setup-tests.ts'],
   transformIgnorePatterns: [
-    'node_modules/(?!(@t3-oss/env-nextjs)/)',
+    'node_modules/(?!(@t3-oss/env-nextjs|lucia|arctic|@lucia-auth)/)',
   ],
 }
  
