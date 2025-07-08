@@ -16,7 +16,7 @@ import {
   ResetPasswordSchemaType,
 } from "@/app/(auth)/reset-password/validations";
 import { resetPasswordAction } from "@/app/(auth)/reset-password/actions";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 
 export function ResetPasswordForm({
   userId,
@@ -26,11 +26,12 @@ export function ResetPasswordForm({
   code: string;
 }) {
   const {
-    error,
-    isPending,
-    isSuccess,
     execute: resetPassword,
-  } = useServerAction(resetPasswordAction);
+    isPending,
+    hasSucceeded,
+    hasErrored,
+    result,
+  } = useAction(resetPasswordAction);
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(resetPasswordSchema),
@@ -45,7 +46,7 @@ export function ResetPasswordForm({
     });
   }
 
-  if (isSuccess) {
+  if (hasSucceeded) {
     return (
       <div>
         <p className="text-center text-lg font-bold">
@@ -61,9 +62,9 @@ export function ResetPasswordForm({
     <>
       <p className="pb-4 text-center text-lg font-bold">Restaurar contraseña</p>
       <Form {...form}>
-        {error && (
+        {hasErrored && (
           <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error.error}</p>
+            <p className="text-sm text-red-500">{result.serverError}</p>
           </div>
         )}
         <form

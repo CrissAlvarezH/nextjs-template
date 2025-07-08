@@ -18,15 +18,16 @@ import {
   SetPasswordFormSchemaType,
 } from "@/app/profile/validations";
 import { changePasswordAction } from "@/app/profile/actions";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 
 export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
   const {
-    error,
-    isSuccess,
+    hasErrored,
+    hasSucceeded,
     isPending,
+    result,
     execute: changePassword,
-  } = useServerAction(changePasswordAction);
+  } = useAction(changePasswordAction);
 
   const form = useForm<SetPasswordFormSchemaType>({
     resolver: zodResolver(setPasswordFormSchema),
@@ -47,7 +48,7 @@ export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
   return (
     <>
       <Form {...form}>
-        {isSuccess && (
+        {hasSucceeded && (
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-green-500 px-2 py-1">
             <p className="text-sm text-green-700">
               Contraseña establecida exitosamente
@@ -61,9 +62,9 @@ export function SetPasswordForm({ user }: { user: DatabaseUserAttributes }) {
             </Button>
           </div>
         )}
-        {error && (
+        {hasErrored && (
           <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error.error}</p>
+            <p className="text-sm text-red-500">{result.serverError}</p>
           </div>
         )}
         <form

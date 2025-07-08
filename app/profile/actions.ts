@@ -13,25 +13,23 @@ import { authenticatedAction } from "@/lib/server-actions";
 import { z } from "zod";
 
 export const changeDataAction = authenticatedAction
-  .createServerAction()
-  .input(userDataFormSchema.extend({ userId: z.number() }))
-  .handler(async ({ input: { userId, name, phone }, ctx: { user } }) => {
+  .inputSchema(userDataFormSchema.extend({ userId: z.number() }))
+  .action(async ({ parsedInput: { userId, name, phone }, ctx: { user } }) => {
     if (user.id !== userId) throw new UnauthorizedError();
     await changeUserDataService(userId, name, phone);
   });
 
 export const changePasswordAction = authenticatedAction
-  .createServerAction()
-  .input(
+  .inputSchema(
     z.object({
       userId: z.number(),
       currentPassword: z.string(),
       newPassword: passwordSchema,
     }),
   )
-  .handler(
+  .action(
     async ({
-      input: { userId, currentPassword, newPassword },
+      parsedInput: { userId, currentPassword, newPassword },
       ctx: { user },
     }) => {
       if (user.id !== userId) throw new UnauthorizedError();
@@ -40,17 +38,15 @@ export const changePasswordAction = authenticatedAction
   );
 
 export const uploadProfileImageAction = authenticatedAction
-  .createServerAction()
-  .input(z.object({ fileWrapper: z.instanceof(FormData), hash: z.string() }))
-  .handler(async ({ input, ctx: { user } }) => {
-    const file = input.fileWrapper.get("image") as File;
-    await uploadUserPictureImageService(user.id, file, input.hash);
+  .inputSchema(z.object({ fileWrapper: z.instanceof(FormData), hash: z.string() }))
+  .action(async ({ parsedInput: { fileWrapper, hash }, ctx: { user } }) => {
+    const file = fileWrapper.get("image") as File;
+    await uploadUserPictureImageService(user.id, file, hash);
   });
 
 export const userRequireCurrentPasswordToChangeItAction = authenticatedAction
-  .createServerAction()
-  .input(z.number())
-  .handler(async ({ input: userId, ctx: { user } }) => {
+  .inputSchema(z.number())
+  .action(async ({ parsedInput: userId, ctx: { user } }) => {
     if (userId !== user.id) throw new UnauthorizedError();
     return await isOAuthUserAndPasswordEmptyService(userId);
   });

@@ -35,7 +35,7 @@ You are an expert full-stack developer proficient in TypeScript, React, Next.js,
 
 ### State Management and Data Fetching
 - Use modern state management solutions (e.g., Zustand) to handle global state
-- Use Server Actions to fetch data, if you need client fetching use useServerAction from zsa-react library
+- Use Server Actions to fetch data, if you need client fetching use useAction from next-safe-action library
 - Implement validation using Zod for schema validation.
 
 ### Security and Performance
@@ -52,8 +52,8 @@ Split the logic in the folowing folders
     - /repositories for access to data using drizzle with postgres, in this place put function to read and write on database
     - /lib low level logic and transversal tools
     - /services in this place put the application services, this is the orchestator layer, it use the repository functions and represents the use cases of the application
-    - actions.ts this file will live in every page folder in app folder, the only porpuse of actions is to create and interface with the frontend, just validate the inputs using the libs zod and zsa and call the use case created for that specific action execution
-    - .tsx files: those are the server or client components, here use the action useServerAction of zsa-react lib to call the actions when it is a client component, when it is a server component just call the server action directly
+    - actions.ts this file will live in every page folder in app folder, the only porpuse of actions is to create and interface with the frontend, just validate the inputs using the libs zod and next-safe-action and call the use case created for that specific action execution
+    - .tsx files: those are the server or client components, here use the action useAction of next-safe-action lib to call the actions when it is a client component, when it is a server component just call the server action directly
 
 ### Stack
 - To create forms use zod and use-react-hook-form, for inputs use shadcn inputs components

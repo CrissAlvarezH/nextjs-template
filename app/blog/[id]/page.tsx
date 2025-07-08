@@ -22,8 +22,8 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
     id
   } = params;
 
-  const [post, error] = await retrieveBlogPostAction(id)
-  if (error) return <p>Error: {error.error}</p>
+  const { data: post, serverError } = await retrieveBlogPostAction(id)
+  if (serverError) return <p>Error: {serverError}</p>
   if (!post) notFound()
 
   // Get current user to check if they can edit the post
@@ -36,23 +36,24 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
         {/* Post header */}
         <div className="py-8 px-7 bg-gray-100/80">
           <div className="flex flex-col md:flex-row justify-between">
-            <h1 className="text-4xl font-bold">{post.title}</h1>
+            <div>
+              <h1 className="text-4xl font-bold">{post.title}</h1>
 
-            <div className="flex items-center gap-3">
-              {canEdit && (
-                <Link href={`/blog/${id}/edit`}>
-                  <Button variant="outline" size="sm">
-                    <EditIcon className="mr-2 h-4 w-4" />
-                    Edit
-                  </Button>
-                </Link>
-              )}
-              <div className="flex items-center">
+              <div className="flex items-center pt-2">
                 <p className="text-sm font-semibold text-gray-400">{new Date(post?.date).toLocaleDateString("en-CA")}</p>
                 <p className="text-xl px-1.5 font-bold">·</p>
                 <p className="text-sm font-light">{post.author.name}</p>
               </div>
             </div>
+
+            {canEdit && (
+              <Link href={`/blog/${id}/edit`}>
+                <Button variant="outline" size="sm">
+                  <EditIcon className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+              </Link>
+            )}
           </div>
 
           <p className="pt-4">{post.description}</p>
@@ -72,6 +73,6 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
           <BlogPostComments postId={post.id} />
         </div>
       </div>
-    </div>
+    </div >
   )
 }

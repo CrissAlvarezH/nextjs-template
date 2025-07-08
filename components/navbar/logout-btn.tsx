@@ -1,6 +1,6 @@
 "use client";
 import { Loader2 } from "lucide-react";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 import { logoutAction } from "@/app/(auth)/login/actions";
 import {
   Dialog,
@@ -10,9 +10,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 export function LogoutButton() {
-  const { isPending, execute: logout } = useServerAction(logoutAction);
+  const { isPending, execute: logout, hasErrored, result } = useAction(logoutAction);
+
+  useEffect(() => {
+    if (hasErrored) {
+      toast({ title: result.serverError, variant: "destructive" })
+    }
+  }, [hasErrored, result.serverError, toast])
 
   return (
     <div>

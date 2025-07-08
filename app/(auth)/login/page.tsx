@@ -1,5 +1,4 @@
 import { Login } from "@/app/(auth)/login/login";
-import { env } from "@/env";
 
 export default async function LoginPage(
   props: {
@@ -12,7 +11,6 @@ export default async function LoginPage(
     callbackUrl = "/"
   } = searchParams;
 
-  console.log("env", env.ENVIRONMENT);
   return (
     <div>
       <div className="flex items-center justify-center px-4 py-4">

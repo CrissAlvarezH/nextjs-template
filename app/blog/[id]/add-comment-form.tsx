@@ -1,29 +1,27 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useServerAction } from "zsa-react";
 import { createPostCommentAction } from "./actions";
 import { useToast } from "@/hooks/use-toast";
-import { PublicError, UnauthenticatedUserError } from "@/lib/errors";
+import { useAction } from "next-safe-action/hooks";
 
 
 export function AddCommentForm({ postId }: { postId: number }) {
   const { toast } = useToast()
   const [comment, setComment] = useState("")
 
-  const { execute, isPending } = useServerAction(createPostCommentAction)
+  const { execute, isPending, hasErrored, result} = useAction(createPostCommentAction)
+
+  useEffect(() => {
+    if (hasErrored) {
+      toast({ title: result.serverError, variant: "destructive" })
+    }
+  }, [hasErrored, result.serverError, toast])
 
   const onSubmit = async () => {
-    const [res, error] = await execute({ content: comment, postId })
-    if (error) {
-      if (error.error == new UnauthenticatedUserError().message)
-        return toast({ title: "You must be logged first", variant: "destructive" })
-      else
-        return toast({ title: error.error, variant: "destructive" })
-    }
-
+    execute({ content: comment, postId })
     setComment("") // reset
   }
 
@@ -35,7 +33,7 @@ export function AddCommentForm({ postId }: { postId: number }) {
 
       <Button
         onClick={onSubmit} variant="secondary"
-        disabled={comment.length == 0}>
+        disabled={isPending || comment.length == 0}>
         {isPending && <Loader2 className="w-4 h-4 mr-1" />}
         Comment
       </Button>

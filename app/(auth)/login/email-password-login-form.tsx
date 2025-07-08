@@ -16,7 +16,7 @@ import {
   EmailPasswordLoginSchemaType,
 } from "@/app/(auth)/login/validations";
 import { emailPasswordLoginAction } from "@/app/(auth)/login/actions";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 
 export function EmailPasswordLoginForm({
   callbackUrl,
@@ -24,10 +24,11 @@ export function EmailPasswordLoginForm({
   callbackUrl: string;
 }) {
   const {
-    error,
-    isPending,
     execute: emailPasswordLogin,
-  } = useServerAction(emailPasswordLoginAction);
+    isPending,
+    hasErrored,
+    result,
+  } = useAction(emailPasswordLoginAction);
 
   const form = useForm<EmailPasswordLoginSchemaType>({
     resolver: zodResolver(emailPasswordLoginSchema),
@@ -40,9 +41,9 @@ export function EmailPasswordLoginForm({
 
   return (
     <Form {...form}>
-      {error && (
+      {hasErrored && (
         <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
-          <p className="text-sm text-red-500">{error.error}</p>
+          <p className="text-sm text-red-500">{result.serverError}</p>
         </div>
       )}
       <form

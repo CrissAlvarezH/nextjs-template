@@ -2,21 +2,19 @@
 
 import { DatabaseUserAttributes } from "@/lib/auth";
 import { UploadImgButton } from "@/components/upload-img-btn";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 import { uploadProfileImageAction } from "@/app/profile/actions";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/utils";
 
 export function ProfileImage({ user }: { user: DatabaseUserAttributes }) {
-  const { isPending, error, execute } = useServerAction(
-    uploadProfileImageAction,
-  );
+  const { isPending, hasErrored, result, execute } = useAction(uploadProfileImageAction);
 
   return (
     <div className="flex items-center gap-5 pb-7">
-      {error && (
+      {hasErrored && (
         <div>
-          <p className="text-red-600">{error.error}</p>
+          <p className="text-red-600">{result.serverError}</p>
         </div>
       )}
       <Image
@@ -36,9 +34,7 @@ export function ProfileImage({ user }: { user: DatabaseUserAttributes }) {
         variant="secondary"
         className="rounded-full"
         loading={isPending}
-        onFileUpload={(formData, hash) =>
-          execute({ fileWrapper: formData, hash })
-        }
+        onFileUpload={(formData, hash) => execute({ fileWrapper: formData, hash })}
       />
     </div>
   );

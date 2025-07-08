@@ -16,15 +16,16 @@ import {
   ForgotPasswordSchemaType,
 } from "@/app/(auth)/forgot-password/validations";
 import { forgotPasswordAction } from "@/app/(auth)/forgot-password/actions";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 
 export function ForgotPasswordForm() {
   const {
-    error,
-    isPending,
-    isSuccess,
     execute: forgotPassword,
-  } = useServerAction(forgotPasswordAction);
+    isPending,
+    hasSucceeded,
+    hasErrored,
+    result,
+  } = useAction(forgotPasswordAction);
 
   const form = useForm<ForgotPasswordSchemaType>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -35,7 +36,7 @@ export function ForgotPasswordForm() {
     void forgotPassword({ email: values.email });
   }
 
-  if (isSuccess) {
+  if (hasSucceeded) {
     return (
       <div>
         <p className="text-center text-lg font-bold">Revisa tu correo</p>
@@ -49,9 +50,9 @@ export function ForgotPasswordForm() {
     <>
       <p className="pb-4 text-center text-lg font-bold">Restaurar contraseña</p>
       <Form {...form}>
-        {error && (
+        {hasErrored && (
           <div className="mb-2 flex flex-wrap justify-center gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error.error}</p>
+            <p className="text-sm text-red-500">{result.serverError}</p>
           </div>
         )}
         <form

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { ImageIcon, SaveIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NewBlogSchemaType, newBlogSchema } from "./validations"
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 import { createPostAction } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 
@@ -26,7 +26,7 @@ export default function NewBlogPostPage() {
 
   const { toast } = useToast()
 
-  const { execute: createPost, isPending: isCreating, error: createError } = useServerAction(createPostAction)
+  const { execute: createPost, isPending: isCreating, hasErrored, result } = useAction(createPostAction)
 
   const {
     control,
@@ -194,9 +194,9 @@ export default function NewBlogPostPage() {
 
 
             <div className="flex items-center gap-3 justify-end">
-              {createError && (
+              {hasErrored && (
                 <div>
-                  <p className="text-red-500">{createError.error}</p>
+                  <p className="text-red-500">{result.serverError}</p>
                 </div>
               )}
 

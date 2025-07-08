@@ -7,9 +7,8 @@ import { redirect } from "next/navigation"
 
 
 export const createPostAction = authenticatedAction
-  .createServerAction()
-  .input(newBlogSchema.extend({ imageWrapper: z.instanceof(FormData) }))
-  .handler(async ({ input: { imageWrapper, ...data }, ctx: { user } }) => {
+  .inputSchema(newBlogSchema.extend({ imageWrapper: z.instanceof(FormData) }))
+  .action(async ({ parsedInput: { imageWrapper, ...data }, ctx: { user } }) => {
     const image = imageWrapper.get("image") as File
     await createBlogPostService({ ...data, author: user.id }, image)
     redirect("/blog")

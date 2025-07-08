@@ -5,16 +5,16 @@ import { formatDateToLocaleString } from "@/lib/dates"
 
 
 export async function BlogPostComments({ postId }: { postId: number }) {
-  const [comments, error] = await listPostCommentsAction(postId)
+  const { data: comments, serverError } = await listPostCommentsAction(postId)
 
-  if (error) return <p>error {error.error}</p>
+  if (serverError) return <p>error {serverError}</p>
   return (
     <div className="py-3">
-      {comments.length == 0 && (
+      {comments?.length == 0 && (
         <p className="text-gray-500">There isn&apos;t any comment yet</p>
       )}
 
-      {comments.map(c => (
+      {comments?.map(c => (
         <div key={c.comment.id} className="py-3">
           <div className="flex gap-3">
             <Image
