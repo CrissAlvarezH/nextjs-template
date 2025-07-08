@@ -4,7 +4,7 @@ Go to [app-template.alvarezcristian.com](https://app-template.alvarezcristian.co
 
 Nextjs project with the following services integrated:
 - [shadcn/ui](https://ui.shadcn.com/) (UI components library)
-- [zsa](https://zsa.vercel.app/docs/introduction), [zod](https://zod.dev/) (Type safe and validated server actions)
+- [next-safe-action](https://next-safe-action.dev/), [zod](https://zod.dev/) (Type safe and validated server actions)
 - [Drizzle](https://orm.drizzle.team/) (ORM with Postgres driver)
 - [Lucia Auth](https://lucia-auth.com/), [Arctic](https://arctic.js.org/) (Email/Password and Google)
 - [Resend emails](https://resend.com/) (Send emails)

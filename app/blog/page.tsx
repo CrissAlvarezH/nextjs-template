@@ -17,9 +17,10 @@ export default async function BlogPage(props: { searchParams: Promise<{ page: st
     page = "1"
   } = searchParams;
 
-  const [data, error] = await listPostsAction({ page });
-  
-  if (error) return <p>Error: {error.error}</p>
+  const { data, serverError } = await listPostsAction({ page });
+
+  if (serverError) return <p>Error: {serverError}</p>
+  if (!data) return <p>No data</p>
 
   const user = await validateRequest()
 
@@ -47,7 +48,7 @@ export default async function BlogPage(props: { searchParams: Promise<{ page: st
 
         {data.posts.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {data.posts.map((post) => <PostCard key={post.id} post={post} />)}
+            {data?.posts.map((post) => <PostCard key={post.id} post={post} />)}
           </div>
         )}
 

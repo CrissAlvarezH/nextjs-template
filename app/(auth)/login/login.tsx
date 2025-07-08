@@ -3,25 +3,27 @@ import Link from "next/link";
 import { GoogleLoginButton } from "@/app/(auth)/login/google-login-btn";
 import { EmailPasswordLoginForm } from "@/app/(auth)/login/email-password-login-form";
 import { Button } from "@/components/ui/button";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 import { isUserAlreadyLoggedInAction } from "@/app/(auth)/login/actions";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export function Login({ callbackUrl }: { callbackUrl: string }) {
   const router = useRouter();
-  const { execute: isUserAlreadyLoggedIn } = useServerAction(
+  const { execute: isUserAlreadyLoggedIn, hasSucceeded } = useAction(
     isUserAlreadyLoggedInAction,
     {
-      onSuccess: (res) => {
-        if (res.data) router.replace(callbackUrl);
+      onSuccess: (res: any) => {
+        if (res.data) {
+          router.replace(callbackUrl);
+        }
       },
     },
   );
 
   useEffect(() => {
     void isUserAlreadyLoggedIn();
-  }, [isUserAlreadyLoggedIn]);
+  }, [isUserAlreadyLoggedIn, hasSucceeded]);
 
   return (
     <>

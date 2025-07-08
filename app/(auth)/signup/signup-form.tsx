@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { signupAction } from "@/app/(auth)/signup/actions";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 
 const defaultValues = {
   full_name: "",
@@ -29,11 +29,12 @@ const defaultValues = {
 
 export function SignupForm() {
   const {
-    error,
-    isPending,
-    isSuccess,
     execute: signup,
-  } = useServerAction(signupAction);
+    isPending,
+    hasSucceeded,
+    hasErrored,
+    result,
+  } = useAction(signupAction);
 
   const form = useForm<SignupSchemaType>({
     resolver: zodResolver(signupSchema),
@@ -44,7 +45,7 @@ export function SignupForm() {
     void signup(values);
   }
 
-  if (isSuccess) {
+  if (hasSucceeded) {
     return (
       <div>
         <p className="text-center text-lg font-bold">
@@ -61,9 +62,9 @@ export function SignupForm() {
     <>
       <p className="pb-4 text-center text-lg font-bold">Registrarme</p>
       <Form {...form}>
-        {error && (
+        {hasErrored && (
           <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error.error}</p>
+            <p className="text-sm text-red-500">{result.serverError}</p>
           </div>
         )}
         <form

@@ -19,16 +19,15 @@ import {
   UserDataFormSchemaType,
 } from "@/app/profile/validations";
 import { changeDataAction } from "@/app/profile/actions";
-import { useServerAction } from "zsa-react";
+import { useAction } from "next-safe-action/hooks";
 
 export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   const {
-    error,
+    hasErrored,
     isPending,
+    result,
     execute: changeData,
-  } = useServerAction(changeDataAction, {
-    onSuccess: () => setOnEditMode(false),
-  });
+  } = useAction(changeDataAction);
   const [onEditMode, setOnEditMode] = useState(false);
 
   const form = useForm<UserDataFormSchemaType>({
@@ -49,9 +48,9 @@ export function UserDataForm({ user }: { user: DatabaseUserAttributes }) {
   return (
     <>
       <Form {...form}>
-        {error && (
+        {hasErrored && (
           <div className="mb-2 flex flex-wrap gap-1 rounded-lg border border-red-500 p-2">
-            <p className="text-sm text-red-500">{error.error}</p>
+            <p className="text-sm text-red-500">{result.serverError}</p>
           </div>
         )}
         <form

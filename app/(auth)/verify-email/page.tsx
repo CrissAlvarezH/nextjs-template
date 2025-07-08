@@ -23,11 +23,12 @@ export default async function VerifyEmailPage(
     );
   }
 
-  const [_, error] = await checkUserCodeAction({ userId: Number(id), code });
-  if (error) {
+  try {
+    await checkUserCodeAction({ userId: Number(id), code });
+  } catch (error) {
     return (
       <div className="flex justify-center py-5">
-        <p className="text-lg text-red-600">{error.error}</p>
+        <p className="text-lg text-red-600">Link invalido</p>
       </div>
     );
   }

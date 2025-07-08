@@ -10,8 +10,10 @@ export default async function ProfilePage() {
   const user = await validateRequest();
   if (!user.user) redirect("/");
 
-  const [requiresCurrentPassword] =
+  const { data: requiresCurrentPassword, serverError } =
     await userRequireCurrentPasswordToChangeItAction(user.user.id);
+
+  if (serverError) return <p>Error: {serverError}</p>
 
   return (
     <div>

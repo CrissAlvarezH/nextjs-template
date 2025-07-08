@@ -10,23 +10,20 @@ import { z } from "zod";
 import { validateRequest } from "@/lib/auth";
 
 export const emailPasswordLoginAction = unauthenticatedAction
-  .createServerAction()
-  .input(emailPasswordLoginSchema.extend({ callbackUrl: z.string().min(0) }))
-  .handler(async ({ input: data }) => {
+  .inputSchema(emailPasswordLoginSchema.extend({ callbackUrl: z.string().min(0) }))
+  .action(async ({ parsedInput: data }) => {
     await emailAndPasswordLoginService(data.email, data.password);
     redirect(data.callbackUrl);
   });
 
 export const logoutAction = authenticatedAction
-  .createServerAction()
-  .handler(async ({ ctx: { user } }) => {
+  .action(async ({ ctx: { user } }) => {
     await logoutService(user.id);
     return redirect("/");
   });
 
 export const isUserAlreadyLoggedInAction = unauthenticatedAction
-  .createServerAction()
-  .handler(async () => {
+  .action(async () => {
     const user = await validateRequest();
     return !!user.user;
   });

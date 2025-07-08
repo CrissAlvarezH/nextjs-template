@@ -13,11 +13,11 @@ import { Label } from "@/components/ui/label";
 import { ImageIcon, SaveIcon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EditBlogSchemaType, editBlogSchema } from "./validations"
-import { useServerAction } from "zsa-react";
 import { updatePostAction, fetchPostForEditAction } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { getImageUrl } from "@/lib/utils";
+import { useAction } from "next-safe-action/hooks";
 
 export default function EditBlogPostPage() {
   const [image, setImage] = useState<File | null>(null);
@@ -25,15 +25,25 @@ export default function EditBlogPostPage() {
   const [currentBanner, setCurrentBanner] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
-  const [isLoading, setIsLoading] = useState(true);
 
   const params = useParams();
   const postId = params.id as string;
 
   const { toast } = useToast()
 
-  const { execute: updatePost, isPending: isUpdating, error: updateError } = useServerAction(updatePostAction)
-  const { execute: fetchPost, error: fetchError } = useServerAction(fetchPostForEditAction)
+  const {
+    execute: updatePost,
+    isPending: isUpdating,
+    hasErrored: hasUpdateError,
+    result: updateResult,
+  } = useAction(updatePostAction)
+  const {
+    execute: fetchPost,
+    isPending: isFetching,
+    hasErrored: hasFetchError,
+    result: fetchResult,
+    hasSucceeded: hasFetchSucceeded,
+  } = useAction(fetchPostForEditAction)
 
   const {
     control,
@@ -53,46 +63,37 @@ export default function EditBlogPostPage() {
   const contentWatch = watch("content");
 
   useEffect(() => {
-    const loadPost = async () => {
-      try {
-        const [post, error] = await fetchPost(postId);
-        
-        if (error) {
-          toast({
-            title: "Error loading post",
-            description: error.error,
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (post) {
-          reset({
-            title: post.title,
-            description: post.description,
-            content: post.content,
-          });
-          
-          if (post.banner) {
-            setCurrentBanner(post.banner);
-            setPreviewUrl(getImageUrl(post.banner, ""));
-          }
-        }
-      } catch (error) {
-        toast({
-          title: "Error loading post",
-          description: "Failed to load the blog post for editing",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (postId) {
-      loadPost();
+      fetchPost({ id: parseInt(postId) });
     }
-  }, [postId, fetchPost, reset, toast]);
+  }, [postId, fetchPost]);
+
+  useEffect(() => {
+    if (hasUpdateError) {
+      toast({ title: updateResult.serverError as string, variant: "destructive" })
+    }
+    if (hasFetchError) {
+      toast({ title: fetchResult.serverError as string, variant: "destructive" })
+    }
+  }, [hasUpdateError, hasFetchError, updateResult.serverError, fetchResult.serverError, toast])
+
+  useEffect(() => {
+    if (hasFetchSucceeded) {
+      const post = fetchResult.data;
+      if (post) {
+        reset({
+          title: post.title,
+          description: post.description,
+          content: post.content,
+        });
+
+        if (post.banner) {
+          setCurrentBanner(post.banner);
+          setPreviewUrl(getImageUrl(post.banner, ""));
+        }
+      }
+    }
+  }, [hasFetchSucceeded, fetchResult, reset])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -119,7 +120,7 @@ export default function EditBlogPostPage() {
     });
   };
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -238,7 +239,7 @@ export default function EditBlogPostPage() {
                 </TabsContent>
                 <TabsContent value="preview" className="mt-0">
                   <div className="prose min-h-[300px] max-w-none overflow-auto rounded-md border bg-white p-4">
-                    <Markdown content={contentWatch}/>
+                    <Markdown content={contentWatch} />
                   </div>
                 </TabsContent>
               </Tabs>
@@ -248,10 +249,10 @@ export default function EditBlogPostPage() {
             </div>
 
             <div className="flex items-center gap-3 justify-end">
-              {(updateError || fetchError) && (
+              {(hasUpdateError || hasFetchError) && (
                 <div>
                   <p className="text-red-500">
-                    {updateError?.error || fetchError?.error}
+                    {updateResult.serverError || fetchResult.serverError}
                   </p>
                 </div>
               )}
@@ -271,4 +272,4 @@ export default function EditBlogPostPage() {
       </Card>
     </div>
   );
-} 
+}
