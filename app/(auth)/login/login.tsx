@@ -10,7 +10,7 @@ import { useEffect } from "react";
 
 export function Login({ callbackUrl }: { callbackUrl: string }) {
   const router = useRouter();
-  const { execute: isUserAlreadyLoggedIn, hasSucceeded } = useAction(
+  const { execute: isUserAlreadyLoggedIn } = useAction(
     isUserAlreadyLoggedInAction,
     {
       onSuccess: (res: any) => {
@@ -23,7 +23,7 @@ export function Login({ callbackUrl }: { callbackUrl: string }) {
 
   useEffect(() => {
     void isUserAlreadyLoggedIn();
-  }, [isUserAlreadyLoggedIn, hasSucceeded]);
+  }, [isUserAlreadyLoggedIn]);
 
   return (
     <>
