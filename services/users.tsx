@@ -25,7 +25,7 @@ import {
   updateUserPicture,
   validateUserEmail,
 } from "@/repositories/users";
-import { hashPassword, lucia, setSession, verifyUserPassword } from "@/lib/auth";
+import { hashPassword, setSession, verifyUserPassword, invalidateAllUserSessions, validateRequest, logout } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { InsertUser } from "@/db/schemas/users";
 import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
@@ -67,14 +67,7 @@ export async function emailAndPasswordLoginService(
 }
 
 export async function logoutService(userId: number) {
-  await lucia.invalidateUserSessions(userId);
-
-  const sessionCookie = lucia.createBlankSessionCookie();
-  (await cookies()).set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes,
-  );
+  await logout();
 }
 
 export async function confirmationEmailCodeExistsService(

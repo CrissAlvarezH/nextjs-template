@@ -21,7 +21,7 @@ const config: Config = {
   globalTeardown: '<rootDir>/testing/global-teardown.ts',
   setupFilesAfterEnv: ['<rootDir>/testing/setup-tests.ts'],
   transformIgnorePatterns: [
-    'node_modules/(?!(@t3-oss/env-nextjs|lucia|arctic|@lucia-auth)/)',
+    'node_modules/(?!(@t3-oss/env-nextjs|arctic)/)',
   ],
 }
  

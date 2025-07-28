@@ -6,7 +6,7 @@ Nextjs project with the following services integrated:
 - [shadcn/ui](https://ui.shadcn.com/) (UI components library)
 - [next-safe-action](https://next-safe-action.dev/), [zod](https://zod.dev/) (Type safe and validated server actions)
 - [Drizzle](https://orm.drizzle.team/) (ORM with Postgres driver)
-- [Lucia Auth](https://lucia-auth.com/), [Arctic](https://arctic.js.org/) (Email/Password and Google)
+- Custom session management, [Arctic](https://arctic.js.org/) (Email/Password and Google)
 - [Resend emails](https://resend.com/) (Send emails)
 - [React email](https://react.email/) (Create beautiful emails)
 - [AWS S3](https://www.npmjs.com/package/@aws-sdk/client-s3) (File management)
@@ -38,7 +38,12 @@ You can use `docker-compose` to that, just run
 docker-compose up
 ```
 
-### 3. Run app
+### 3. Run database migrations
+```shell
+npm run db:migrate
+```
+
+### 4. Run app
 ```shell
 npm run dev
 ```
