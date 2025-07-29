@@ -10,6 +10,7 @@ import { LogoutButton } from "@/components/navbar/logout-btn";
 import { GoToLoginButton } from "@/components/navbar/go-to-login-btn";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/utils";
+import { Wallet } from "lucide-react";
 
 export async function UserNavButton() {
   const user = await validateRequest();
@@ -17,24 +18,31 @@ export async function UserNavButton() {
   return (
     <>
       {user.user ? (
-        <Popover>
-          <PopoverTrigger asChild>
-            <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-100/80 rounded-md px-2">
-              <Image
-                width={100}
-                height={100}
-                src={getImageUrl(
-                  user.user.picture,
-                  "/profile-picture-empty.jpg",
-                )}
-                placeholder={user.user.pictureHash ? "blur" : "empty"}
-                blurDataURL={user.user.pictureHash || ""}
-                className="h-7 w-7 rounded-full object-cover"
-                alt="User profile picture"
-              />
-              <p className="text-sm">{user.user?.name.split(" ")[0]}</p>
-            </div>
-          </PopoverTrigger>
+        <div className="flex items-center gap-3">
+          {/* Credit Balance */}
+          <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full border border-blue-200">
+            <Wallet className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-700">{user.user.credits}</span>
+          </div>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-100/80 rounded-md px-2">
+                <Image
+                  width={100}
+                  height={100}
+                  src={getImageUrl(
+                    user.user.picture,
+                    "/profile-picture-empty.jpg",
+                  )}
+                  placeholder={user.user.pictureHash ? "blur" : "empty"}
+                  blurDataURL={user.user.pictureHash || ""}
+                  className="h-7 w-7 rounded-full object-cover"
+                  alt="User profile picture"
+                />
+                <p className="text-sm">{user.user?.name.split(" ")[0]}</p>
+              </div>
+            </PopoverTrigger>
           <PopoverContent>
             <div className="flex flex-col gap-2">
               <p className="text-sm">{user.user?.name}</p>
@@ -53,6 +61,7 @@ export async function UserNavButton() {
             </div>
           </PopoverContent>
         </Popover>
+        </div>
       ) : (
         <GoToLoginButton />
       )}

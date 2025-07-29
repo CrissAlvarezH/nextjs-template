@@ -18,6 +18,7 @@ export const users = pgTable("users", {
   is_email_validated: boolean("is_email_validated").default(false),
   phone: varchar("phone", { length: 15 }),
   password: varchar("password").notNull(),
+  credits: integer("credits").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

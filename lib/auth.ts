@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/db";
 import { users, sessions } from "@/db/schemas";
-import { SelectSession, SelectUser } from "@/db/schemas/users";
+import { SelectSession } from "@/db/schemas/users";
 import { cache } from "react";
 import { Google } from "arctic";
 import { env } from "@/env";
@@ -20,6 +20,7 @@ export type DatabaseUserAttributes = {
   name: string;
   email: string;
   phone: string | null;
+  credits: number;
 };
 
 export interface UserAndSession {
@@ -102,6 +103,7 @@ async function validateSessionId(sessionId: string): Promise<UserAndSession> {
       name: user.name,
       email: user.email,
       phone: user.phone,
+      credits: user.credits,
     },
     session,
   };

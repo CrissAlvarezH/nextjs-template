@@ -24,6 +24,8 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     SENTRY_AUTH_TOKEN: z.string().min(1),
     SENTRY_DSN: z.string().min(1),
+    WOMPI_SECRET_KEY: z.string().min(1),
+    WOMPI_WEBHOOK_SECRET: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z
@@ -31,6 +33,7 @@ export const env = createEnv({
       .min(1)
       .regex(/^(dev|prod)$/),
     NEXT_PUBLIC_SENTRY_DSN: z.string().min(1),
+    NEXT_PUBLIC_WOMPI_PUBLIC_KEY: z.string().min(1),
   },
   runtimeEnv: {
     HOST_NAME: process.env.HOST_NAME,
@@ -68,5 +71,10 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+
+    // Wompi
+    WOMPI_SECRET_KEY: process.env.WOMPI_SECRET_KEY,
+    WOMPI_WEBHOOK_SECRET: process.env.WOMPI_WEBHOOK_SECRET,
+    NEXT_PUBLIC_WOMPI_PUBLIC_KEY: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY,
   },
 });

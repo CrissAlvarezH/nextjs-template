@@ -1,2 +1,3 @@
 export { users, sessions, accounts, confirmationEmailCode } from "./users";
-export { blogPosts, blogPostComment } from "./blog"
+export { blogPosts, blogPostComment } from "./blog";
+export { creditPackages, creditTransactions } from "./credits";

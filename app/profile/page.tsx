@@ -5,6 +5,7 @@ import { ChangePasswordForm } from "@/app/profile/change-password-form";
 import { userRequireCurrentPasswordToChangeItAction } from "@/app/profile/actions";
 import { SetPasswordForm } from "@/app/profile/set-password-form";
 import { ProfileImage } from "@/app/profile/profile-image";
+import { CreditsSection } from "@/app/profile/credits-section";
 
 export default async function ProfilePage() {
   const user = await validateRequest();
@@ -21,7 +22,10 @@ export default async function ProfilePage() {
         <div className="mx-5 w-full py-4 md:w-[650px]">
           <ProfileImage user={user.user} />
 
-          <p className="pb-3 text-lg font-semibold">Mis datos</p>
+          <p className="pb-3 text-lg font-semibold">Créditos</p>
+          <CreditsSection user={user.user} />
+
+          <p className="pb-3 pt-6 text-lg font-semibold">Mis datos</p>
           <UserDataForm user={user.user} />
 
           {requiresCurrentPassword ? (
