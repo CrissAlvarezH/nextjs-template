@@ -8,6 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { CreditCard } from "lucide-react";
 import { SelectCreditPackage } from "@/db/schemas/credits";
 import { env } from "@/env";
@@ -95,17 +102,21 @@ function PaymentForm({ selectedPackage, onSuccess, onCancel }: PaymentFormProps)
 
   return (
     <div className="space-y-4">
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h4 className="font-semibold text-gray-900">{selectedPackage.name}</h4>
-        <p className="text-sm text-gray-600">
-          {selectedPackage.credits} créditos - ${(selectedPackage.priceCents / 100).toFixed(2)}
-        </p>
-      </div>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">{selectedPackage.name}</CardTitle>
+          <CardDescription>
+            {selectedPackage.credits} créditos - ${(selectedPackage.priceCents / 100).toFixed(2)}
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600 text-sm">{error}</p>
-        </div>
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-4">
+            <p className="text-red-600 text-sm">{error}</p>
+          </CardContent>
+        </Card>
       )}
 
       <div className="flex space-x-3">
@@ -122,7 +133,7 @@ function PaymentForm({ selectedPackage, onSuccess, onCancel }: PaymentFormProps)
           type="button"
           onClick={handlePayment}
           disabled={isProcessing}
-          className="flex-1 bg-blue-600 hover:bg-blue-700"
+          className="flex-1"
         >
           {isProcessing ? (
             <>
@@ -163,27 +174,29 @@ export function CreditPurchaseForm({ packages, open, onClose, onSuccess }: Credi
           
           <div className="grid gap-4 md:grid-cols-2">
             {packages.map((pkg) => (
-              <div
+              <Card
                 key={pkg.id}
-                className="border rounded-lg p-4 hover:border-blue-300 transition-colors cursor-pointer"
+                className="cursor-pointer transition-colors hover:border-primary"
                 onClick={() => setSelectedPackage(pkg)}
               >
-                <div className="text-center">
-                  <h4 className="font-semibold text-lg text-gray-900">{pkg.name}</h4>
-                  <p className="text-2xl font-bold text-blue-600 my-2">
+                <CardHeader className="text-center pb-4">
+                  <CardTitle className="text-lg">{pkg.name}</CardTitle>
+                  <div className="text-2xl font-bold py-2">
                     {pkg.credits} créditos
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  </div>
+                  <CardDescription className="text-lg font-semibold">
                     ${(pkg.priceCents / 100).toFixed(2)}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  </CardDescription>
+                  <CardDescription className="text-sm">
                     ${((pkg.priceCents / 100) / pkg.credits).toFixed(3)} por crédito
-                  </p>
-                  <Button className="w-full mt-3 bg-blue-600 hover:bg-blue-700">
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button className="w-full">
                     Seleccionar
                   </Button>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </DialogContent>

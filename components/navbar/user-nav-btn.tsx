@@ -20,9 +20,9 @@ export async function UserNavButton() {
       {user.user ? (
         <div className="flex items-center gap-3">
           {/* Credit Balance */}
-          <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full border border-blue-200">
-            <Wallet className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-700">{user.user.credits}</span>
+          <div className="flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200">
+            <Wallet className="w-4 h-4" />
+            <span className="text-sm font-medium">{user.user.credits}</span>
           </div>
 
           <Popover>
